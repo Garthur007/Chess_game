@@ -30,7 +30,7 @@ class Pawn{
 					if (gameboard.findTile(xtemp, ytemp).isOccupied && gameboard.findTile(xtemp, ytemp).colour == this.ennemyColour)
 					{
 						this.possibleMoves.push(xtemp.toString() + ytemp.toString());
-						fdatasync;
+						
 					}
 					
 					if (gameboard.findTile(this.x, ytemp).isOccupied && gameboard.findTile(this.x, ytemp).colour == this.ennemyColour)
