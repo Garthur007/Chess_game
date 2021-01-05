@@ -1,0 +1,319 @@
+<html>
+    <head>
+        <script defer  type="text/javascript" src="gameManager.js"></script>
+        <script  defer type="text/javascript" src="tile.js"></script>
+        <script  defer type="text/javascript" src="board.js"></script>
+        <script defer type="text/javascript" src="./pieces/pawn.js"></script>
+        <script defer type="text/javascript" src="./pieces/bishop.js"></script>
+        <script defer type="text/javascript" src="./pieces/king.js"></script>
+        <script defer type="text/javascript" src="./pieces/knight.js"></script>
+        <script defer type="text/javascript" src="./pieces/queen.js"></script>
+        <script defer type="text/javascript" src="./pieces/rook.js"></script>
+        <script defer type="text/javascript" src="./players/playerBlack.js"></script>
+        <script defer type="text/javascript" src="./players/playerWhite.js"></script>
+        <script defer type="text/javascript" src="index.js"></script>
+        <link rel="stylesheet" href="style.css" />
+
+        <script defer type="text/javascript">
+
+        </script>
+    </head>
+    <body>
+        <table class="chess-board">
+            <tbody class="body">
+                <tr>
+                    <th></th>
+                    <th>a</th>
+                    <th>b</th>
+                    <th>c</th>
+                    <th>d</th>
+                    <th>e</th>
+                    <th>f</th>
+                    <th>g</th>
+                    <th>h</th>
+                </tr>
+                <tr>
+                    <th>8</th>
+                    <td class="light">
+                        <input type="button" bouton class='t70' id="t70" value="♜">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class="t71" id="t71">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t72' id="t72">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t73' id="t73" abcd>
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t74' id="t74">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t75' id="t75">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t76' id="t76">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t77' id="t77">
+                        </input> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>7</th>
+                    <td class="dark"><input type="button" class='t60' id="t60">
+                        </input>
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t61' id="t61">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t62' id="t62">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t63' id="t63">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t64' id="t64">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t65' id="t65">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t66' id="t66">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t67' id="t67">
+                        </input> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>6</th>
+                    <td class="light">
+                        <input type="button" class='t50' id="t50">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t51' id="t51">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t52'  id="t52">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t53' id="t53">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t54' id="t54">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t55' id="t55">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t56' id="t56">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t57' id="t57">
+                        </input> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>5</th>
+                    <td class="dark">
+                        <input type="button" class='t40' id="t40">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t41' id="t41">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t42' id="t42">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t43' id="t43">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t44' id="t44">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t45' id="t45">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t46' id="t46">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t47' id="t47">
+                        </input> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>4</th>
+                    <td class="light">
+                        <input type="button" class='t30' id="t30">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t31' id="t31">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t32' id="t32">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t33' id="t33">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t34' id="t34">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t35' id="t35">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t36' id="t36">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t37' id="t37">
+                        </input> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td class="dark">
+                        <input type="button" class='t20' id="t20">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t21' id="t21">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t22' id="t22">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t23' id="t23">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t24' id="t24">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t25' id="t25">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t26' id="t26">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t27' id="t27">
+                        </input> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <td class="light">
+                        <input type="button" class='t10' id="t10">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t11' id="t11">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t12' id="t12">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t13' id="t13">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t14' id="t14">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t15' id="t15">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t16' id="t16">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t17' id="t17">
+                        </input> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>1</th>
+                    <td class="dark">
+                        <input type="button" class='t00' id="t00">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t01' id="t01">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t02' id="t02">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t03' id="t03">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t04' id="t04">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t05' id="t05">
+                        </input> 
+                    </td>
+                    <td class="dark">
+                        <input type="button" class='t06' id="t06">
+                        </input> 
+                    </td>
+                    <td class="light">
+                        <input type="button" class='t07' id="t07">
+                        </input> 
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>
+
+
