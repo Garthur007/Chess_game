@@ -30,7 +30,6 @@ class Pawn{
 					if (gameboard.findTile(xtemp, ytemp).isOccupied && gameboard.findTile(xtemp, ytemp).colour == this.ennemyColour)
 					{
 						this.possibleMoves.push(xtemp.toString() + ytemp.toString());
-						
 					}
 					
 					if (gameboard.findTile(this.x, ytemp).isOccupied && gameboard.findTile(this.x, ytemp).colour == this.ennemyColour)
@@ -39,10 +38,9 @@ class Pawn{
 						var occ = gameboard.findOccupant(this.x, ytemp);
 						
 
-						if (tempPawnTile.occupantType == "pawn" &&
+						if(tempPawnTile.occupantType == "pawn" &&
 								tempPawnTile.colour == this.ennemyColour && 
-								this.canEatSide &&
-								gameboard.gameManager.pieces[occ].hasJumped){
+								gameboard.gameManager.pieces[occ].hasJumped ){
 								this.possibleMoves.push((this.x + this.direction).toString()+ytemp.toString());
 						}
 					}
@@ -51,10 +49,7 @@ class Pawn{
 				{
 					this.possibleMoves.push(xtemp.toString() + ytemp.toString());
 					if (this.numberOfMoves == 0 && !gameboard.findTile(xtemp + this.direction, ytemp).isOccupied)
-					{
-						this.possibleMoves.push((xtemp +this.direction).toString() + ytemp.toString());
-					}
-
+						this.possibleMoves.push((xtemp +this.direction).toString() + ytemp.toString());	
 				}
 			}
 		}

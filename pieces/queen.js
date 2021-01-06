@@ -9,9 +9,8 @@ class Queen{
         this.possibleMoves = [];
         this.type = "queen";
         
-    }
-    
-
+	}
+	
     update_possible_moves(gameboard){
 
 
@@ -19,7 +18,6 @@ class Queen{
         //down
         for (var i = 1; i < 8; ++i)
 		{
-			
 			var ytemp = this.y - i;
 			if (Board.isInbound(ytemp))
 			{
@@ -200,6 +198,6 @@ class Queen{
 				}
 			}
 		}
-    }
+	}
 }
 

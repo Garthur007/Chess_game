@@ -3,7 +3,7 @@ const whitePieces = {pawn:"♙",rook: "♖", knight:"♘",bishop: "♗",queen: "
 
 class Tile{
 
-    constructor(x, y, piece = null){
+    constructor(x, y){
         this.x = x;
         this.y = y;
         this.nbClick = 0;
@@ -27,7 +27,6 @@ class Tile{
         var doc = document.getElementById('t' + this.id);
         doc.setAttribute('value', symbol);
     }
-
     reset(){
         var doc = document.getElementById('t' + this.id);
         doc.setAttribute('value', "");
@@ -36,5 +35,14 @@ class Tile{
         this.colour = ";"
         this.isOccupied = false;
     }
-}
 
+    copy(){
+        var newCopy = new Tile(this.x, this.y);
+        newCopy.nbClick = this.nbClick;
+        newCopy.isOccupied = this.isOccupied;
+        newCopy.occupant = this.occupant;
+        newCopy.occupantType = this.occupantType;
+        newCopy.colour = this.colour;
+        return newCopy;
+    }
+}

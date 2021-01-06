@@ -116,6 +116,21 @@ setEventsForMouseOver(){
 }
 */
 
+
+class Attack{
+    constructor(fromX, fromY, toX, toY, gm){
+        this.fromX = fromX;
+        this.fromY = fromY;
+        this.toX = toX;
+        this.toY = toY;
+
+        this.gameboard = gm;
+        this.attaquant =  this.gameboard.findOccupant(this.toX, this.toY);
+        this.attaquantColour = this.attaquant.split('-')[0];
+    }
+}
+
+
 const buttons =  document.querySelectorAll("input");
 const whiteColour = "white";
 const blackColour ="black";
@@ -167,8 +182,21 @@ class GameManager{
 
         };
 
+        this.whiteKingInDanger = false;
+        this.blackKingInDanger = false;
+
+        this.listOfWhiteDangers =[];
+        this.listOfBlackDangers =[];
+
+
+        this.lastMoves = [];
+
         this.start();
     }
+    toggleTurn(){
+        this.isWhitesTurn = !this.isWhitesTurn;
+    }
+
    start(){
         this.init_pieces_on_board();
         this.gameboard.tiles.forEach((tile)=>{
@@ -188,8 +216,48 @@ class GameManager{
         
    }
 
+   moveWillProtectKing(fromX, fromY, toX, toY, colour){
+    var id = this.gameboard.findOccupant(fromX, fromY);
+    var pieceToMove = this.pieces[id];
+
+    var xtemp = pieceToMove.x;
+    var ytemp = pieceToMove.y;
+    pieceToMove.x = toX;
+    pieceToMove.y = toY;
+
+    this.gameboard.findTile(toX, toY).setPiece(pieceToMove.colour + '-' + pieceToMove.type + '-' + pieceToMove.index);
+
+    var posKing = this.pieces[colour + "-king-0"].x.toString()+
+                    this.pieces[colour + "-king-0"].y.toString();
+
+    for(var i in this.listOfWhiteDangers){
+        console.log(this.pieces[i]);
+        this.pieces[this.listOfWhiteDangers[i]].update_possible_moves(this.gameboard);
+        if(this.pieces[this.listOfWhiteDangers[i]].possibleMoves.includes(posKing)){
+            return false;
+        }
+    }
+
+    pieceToMove.x = xtemp;
+    pieceToMove.y = ytemp;
+       return true;
+   }
+
    isValidMove(fromX, fromY, toX, toY){
-       return this.findTileValidMoves(fromX, fromY).includes(toX.toString() + toY.toString())
+
+    var move = toX.toString() + toY.toString();
+        if(this.isWhitesTurn && this.whiteKingInDanger){
+            console.log("le roi blanc est en danger");
+
+
+
+        }else if (this.blackKingInDanger){
+            console.log("le roi noir est en danger");
+
+            return this.moveWillProtectKing(fromX, fromY, toX, toY, "black")&& this.findTileValidMoves(fromX, fromY).includes(move);
+        }
+
+       return this.findTileValidMoves(fromX, fromY).includes(move);
    } 
 
    findTileValidMoves(fromX, fromY){
@@ -208,12 +276,17 @@ class GameManager{
             this.pieces[piece].y = toY;
             startingTile.reset();
             endingTile.setPiece(piece);
+            
+            this.lastMoves.push(new Attack(fromX, fromY, toX, toY, this.gameboard));
+            //console.log(this.lastMoves[this.lastMoves.length - 1]);
 
             var pieceType = piece.split('-')[1];
+            var pieceColour = piece.split('-')[0];
 
             if(pieceType == "pawn"){
-                this.pieces[piece].numberOfMoves = 1;
-                this.pieces[piece].hasJumped =true;
+                this.pieces[piece].numberOfMoves += 1;
+                if(this.pieces[piece].numberOfMoves == 1 && this.pieces[piece].x == 4)
+                    this.pieces[piece].hasJumped =true;
             }
 
             if(pieceType == "king"){
@@ -230,13 +303,19 @@ class GameManager{
             
             }
 
+            for(var key in this.pieces){
+                if(key.split('-')[1] == "pawn" && key.split('-')[0] == pieceColour)
+                    if(this.pieces[key].numberOfMoves != 0)
+                        this.pieces[key].canEatSide = true;
+            }
+            this.toggleTurn();
+            this.check(pieceColour);
+
         }else{
-            console.log("invalid");
+            console.log("invalid move");
         }
 
-        //console.log(this.pieces);
    }
-
    //this is everything with the graphical part
     setEventHandlerOnClick(){
         buttons.forEach((button)=>{
@@ -246,21 +325,17 @@ class GameManager{
                     var x = parseInt(fromTile[1]);
                     var y = parseInt(fromTile[2]);
                     
-                    if(this.gameboard.findTile(x , y).isOccupied){
-                    this.pieceToMove.push(fromTile);
-                    this.clickCount++;
-                    
+                    var colourTurn = this.isWhitesTurn?"white":"black";
 
-                    //test
+                    if(this.gameboard.findTile(x , y).isOccupied && this.gameboard.findTile(x , y).colour == colourTurn){
+                        this.pieceToMove.push(fromTile);
+                        this.clickCount++;
                     
-
-                    this.findTileValidMoves(x,y).forEach((pos) => {
-                        var doc =  document.getElementById('t'+pos);
-                        if(doc == null)
-                            console.log("C'est null : " + this.findTileValidMoves(x,y));
-                        doc.style.background = '#13ad1d';
-                    });
-                    //fini here
+                        this.findTileValidMoves(x,y).forEach((pos) => {
+                            var doc =  document.getElementById('t'+pos);
+                            doc.style.background = '#8a1582';
+                        });
+                        //fini here
                     }
                 }else{
 
@@ -291,4 +366,34 @@ class GameManager{
         });
     }
 
+    check(pieceColour){
+        var otherColour = pieceColour == "white"?"black":"white";
+        for(var key in this.pieces){
+            if(key.split('-')[0] == pieceColour){
+               this.pieces[key].update_possible_moves(this.gameboard);
+                this.pieces[key].possibleMoves.forEach((move)=>{
+                    if(move == this.pieces[otherColour + "-king-0"].x.toString() +
+                     this.pieces[otherColour + "-king-0"].y.toString()){
+                        //console.log("The "+ otherColour +" king is in danger by " + key);
+
+                        if(otherColour == "white"){
+                            this.whiteKingInDanger = true;
+                            this.listOfBlackDangers.push(key);
+                        }
+                        else{
+                            this.blackKingInDanger = true;
+                            this.listOfWhiteDangers.push(key);
+                          }
+                     }
+                });
+            }
+        }
+    }
+
+
 }
+
+/*
+Comment vérifier si le king est en danger?
+
+*/
