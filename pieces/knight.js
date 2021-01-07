@@ -126,4 +126,12 @@ class Knight{
             }
         }
     }
+
+    clone(){
+        var clone = new Knight(this.x, this.y, this.alive, this.colour, this.index);
+        this.possibleMoves.forEach((move)=>{
+            clone.possibleMoves.push(move);
+        });
+        return clone;
+    }
 }

@@ -14,22 +14,25 @@ class Tile{
         this.idTile = x.toString() + y.toString();
         this.id = this.x.toString() + this.y.toString();
     }
-    setPiece(occ){
-        this.reset();
+    setPiece(occ, actualGame = true){
+        this.reset(actualGame);
         this.occupant = occ;
         this.colour = occ.split("-")[0];
         this.occupantType = occ.split('-')[1];
         this.isOccupied = true;
-        this.setSymbolOnTile();
+        if(actualGame)
+            this.setSymbolOnTile();
     }
     setSymbolOnTile(){
         var symbol = this.colour == "white"?whitePieces[this.occupantType]: blackPieces[this.occupantType];
         var doc = document.getElementById('t' + this.id);
         doc.setAttribute('value', symbol);
     }
-    reset(){
-        var doc = document.getElementById('t' + this.id);
-        doc.setAttribute('value', "");
+    reset(actualGame = true){
+        if(actualGame){
+            var doc = document.getElementById('t' + this.id);
+            doc.setAttribute('value', "");
+        }
         this.occupantType = "";
         this.occupant = "";
         this.colour = ";"

@@ -1,13 +1,4 @@
-POUR LE PION
+Il me reste à m'assurer que le comportement des pawns est respecté.
 
-1-  finir le pawn, pour que quand un pion jump à coté de lui, il puice le bouffer correctement.
-2- faire un sorte que lorsqu'un pion atteigne l'autre bout du board, il puisse se transformer en ce qu'il veut (sauf king)
--------------------------------------------------------------------------------------------------------------------------
-POUR PROTÉGER LE king
 
-faire en sorte que le king soit tjrs protéger sinon c'est échec et mat
--------------------------------------------------------------------------------------------------------------------------
-FINALEMENT
-
-faire en sorte que ce soit à tour de rôle
--------------------------------------------------------------------------------------------------------------------------
+puis clean le code!

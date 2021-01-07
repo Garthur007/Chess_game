@@ -25,7 +25,6 @@ class King{
             }
         };
     }
-
     
     update_possible_moves(gameboard){
         this.possibleMoves.splice(0, this.possibleMoves.length);
@@ -49,7 +48,17 @@ class King{
         }
         
         if(!this.hasJump)
-            if(!gameboard.findTile(this.x, this.y + 2).isOccupied)
+            if(Board.isInbound(this.y + 2) && !gameboard.findTile(this.x, this.y + 2).isOccupied && 
+            !gameboard.findTile(this.x, this.y + 1).isOccupied)
                 this.possibleMoves.push(this.x.toString()+ (this.y + 2).toString());
+    }
+
+    clone(){
+        var clone = new King(this.x, this.y, this.alive, this.colour);
+        this.possibleMoves.forEach((move)=>{
+            clone.possibleMoves.push(move);
+        });
+        clone.hasJump = this.hasJump;
+        return clone;
     }
 }

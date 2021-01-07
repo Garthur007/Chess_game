@@ -98,4 +98,11 @@ class Rook{
         
         //console.log("voici les possibles moves : " + this.possibleMoves);
     }
+    clone(){
+        var clone = new Rook(this.x, this.y, this.alive, this.colour, this.index);
+        this.possibleMoves.forEach((move)=>{
+            clone.possibleMoves.push(move);
+        });
+        return clone;
+    }
 }

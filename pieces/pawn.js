@@ -1,6 +1,6 @@
 class Pawn{
 
-    constructor(x, y, alive, colour, index, gm){
+    constructor(x, y, alive, colour, index){
 		this.hasJumped = false;
         this.x = x;
         this.y = y;
@@ -15,6 +15,7 @@ class Pawn{
 		this.canEatSide =  false;
     }
 
+	//Dernière méthode puis c'est finie!
     update_possible_moves(gameboard){ 
 
        this.possibleMoves.splice(0,this.possibleMoves.length);
@@ -28,21 +29,19 @@ class Pawn{
 				if (i != 0)
 				{
 					if (gameboard.findTile(xtemp, ytemp).isOccupied && gameboard.findTile(xtemp, ytemp).colour == this.ennemyColour)
-					{
 						this.possibleMoves.push(xtemp.toString() + ytemp.toString());
-					}
-					
+
 					if (gameboard.findTile(this.x, ytemp).isOccupied && gameboard.findTile(this.x, ytemp).colour == this.ennemyColour)
 					{
 						var tempPawnTile = gameboard.findTile(this.x, ytemp);
 						var occ = gameboard.findOccupant(this.x, ytemp);
 						
-
+						/*	
 						if(tempPawnTile.occupantType == "pawn" &&
 								tempPawnTile.colour == this.ennemyColour && 
 								gameboard.gameManager.pieces[occ].hasJumped ){
 								this.possibleMoves.push((this.x + this.direction).toString()+ytemp.toString());
-						}
+						}*/
 					}
 				}
 				else if (!gameboard.findTile(xtemp, ytemp).isOccupied)
@@ -56,5 +55,14 @@ class Pawn{
 
 
 	}
-	
+	clone(){
+        var clone = new Pawn(this.x, this.y, this.alive, this.colour, this.index);
+        this.possibleMoves.forEach((move)=>{
+            clone.possibleMoves.push(move);
+		});
+		clone.hasJumped = this.hasJumped;
+		clone.numberOfMoves = this.numberOfMoves;
+		clone.canEatSide = this.canEatSide;
+        return clone;
+    }
 }

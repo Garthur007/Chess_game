@@ -106,5 +106,11 @@ class Bishop{
             }
         }
     }
-    
+    clone(){
+        var clone = new Bishop(this.x, this.y, this.alive, this.colour, this.index);
+        this.possibleMoves.forEach((move)=>{
+            clone.possibleMoves.push(move);
+        });
+        return clone;
+    }
 }

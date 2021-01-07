@@ -4,10 +4,11 @@ class Board{
 
     constructor(gm){
         this.tiles = [];
-        this.gameManager = gm;
+        //this.gameManager = gm;
         this.InitializeBoard();
     }
 
+    
     InitializeBoard(){
         for(var i = 0; i < w; i++)
             for(var j = 0; j < w; j++)
@@ -28,7 +29,7 @@ class Board{
         return a >= 0 && a < 8 && b >= 0 && b < 8;
     }
 
-    copy(){
+    clone(){
         var gbCopy = new Board(this.gameManager);
         for(var i = 0; i < w; i++)
             for(var j = 0; j < w; j++){

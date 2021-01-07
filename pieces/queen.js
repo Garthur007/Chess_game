@@ -199,5 +199,14 @@ class Queen{
 			}
 		}
 	}
+
+	clone(){
+        var clone = new Queen(this.x, this.y, this.alive, this.colour);
+        this.possibleMoves.forEach((move)=>{
+            clone.possibleMoves.push(move);
+        });
+        return clone;
+    }
+	
 }
 
