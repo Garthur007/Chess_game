@@ -1,11 +1,12 @@
 class King{
-    constructor(x,y, alive, colour){
+    constructor(x,y, alive, colour, index = 0){
         this.hasJump = false;
         
         this.w = 8;
         this.x = x;
         this.y = y;
         this.index = 0;
+        this.nextIndex = this.index + 1;
         this.alive =  alive;
         this.colour = colour;
         this.possibleMoves = [];

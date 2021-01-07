@@ -1,10 +1,11 @@
 class Queen{
-    constructor(x,y, alive, colour){
+    constructor(x,y, alive, colour, index = 1){
         const w = 8;
         this.x = x;
         this.y = y;
         this.alive = alive;
-        this.index =0;
+		this.index =0;
+		this.nextIndex = this.index + 1;
         this.colour = colour;
         this.possibleMoves = [];
         this.type = "queen";

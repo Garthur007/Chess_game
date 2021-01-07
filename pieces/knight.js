@@ -6,6 +6,7 @@ class Knight{
         this.alive = alive;
         this.colour = colour;
         this.index = index;
+        this.nextIndex = this.index + 1;
         this.possibleMoves = [];
         this.type = "knight";
     }

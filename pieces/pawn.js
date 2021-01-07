@@ -16,7 +16,7 @@ class Pawn{
     }
 
 	//Dernière méthode puis c'est finie!
-    update_possible_moves(gameboard){ 
+    update_possible_moves(gameboard, pieces, lastMoves =null, k=1){ 
 
        this.possibleMoves.splice(0,this.possibleMoves.length);
 		var xtemp = this.x + this.direction;
@@ -35,19 +35,53 @@ class Pawn{
 					{
 						var tempPawnTile = gameboard.findTile(this.x, ytemp);
 						var occ = gameboard.findOccupant(this.x, ytemp);
-						
-						/*	
-						if(tempPawnTile.occupantType == "pawn" &&
-								tempPawnTile.colour == this.ennemyColour && 
-								gameboard.gameManager.pieces[occ].hasJumped ){
+							
+
+						var condition = true;
+						if(lastMoves != null){
+							var currentX = this.x;
+							var currentY =this.y;
+							var toX = this.x + this.direction;
+							var toY = ytemp;
+
+							if(toX - currentX == this.direction &&
+								toY - currentY != 0){
+									//console.log("called 1");
+									var ennemyTile = gameboard.findTile(currentX,toY);
+									//console.log(ennemyTile);
+									if(ennemyTile.isOccupied && 
+									ennemyTile.occupantType =="pawn" &&
+									ennemyTile.colour != this.colour){
+									
+										var lastMoveTile = lastMoves[lastMoves.length-k];
+										console.log(lastMoveTile);
+										var x = parseInt(lastMoveTile[1]);
+										var y = parseInt(lastMoveTile[2]);
+									
+										if(x != currentX || y != toY)
+											{
+												console.log(lastMoveTile);
+												console.log("Rien á signaler");
+											}else if(tempPawnTile.occupantType == "pawn" && 
+											pieces[occ].numberOfMoves == 1
+											&& pieces[occ].hasJumped && condition){
+											this.possibleMoves.push((this.x + this.direction).toString()+ytemp.toString());
+									}
+									}
+								}
+
+						}else if(tempPawnTile.occupantType == "pawn" && 
+								pieces[occ].numberOfMoves == 1
+								&& pieces[occ].hasJumped && condition){
 								this.possibleMoves.push((this.x + this.direction).toString()+ytemp.toString());
-						}*/
+						}
 					}
 				}
 				else if (!gameboard.findTile(xtemp, ytemp).isOccupied)
 				{
 					this.possibleMoves.push(xtemp.toString() + ytemp.toString());
-					if (this.numberOfMoves == 0 && !gameboard.findTile(xtemp + this.direction, ytemp).isOccupied)
+					if (this.numberOfMoves == 0 && Board.isInbound(xtemp + this.direction)
+						 &&!gameboard.findTile(xtemp + this.direction, ytemp).isOccupied)
 						this.possibleMoves.push((xtemp +this.direction).toString() + ytemp.toString());	
 				}
 			}

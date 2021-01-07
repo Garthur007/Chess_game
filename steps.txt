@@ -1,4 +1,4 @@
-Il me reste à m'assurer que le comportement des pawns est respecté.
+Le jeu est finie!!!!!
 
 
-puis clean le code!
+il me reste à clean le code.
