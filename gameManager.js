@@ -103,14 +103,6 @@ class GameManager{
     
     var gs = new GameState(fromX, fromY, toX, toY,this.pieces, this.gameboard);
     var condition = this.isWhitesTurn?gs.isWhiteInDanger():gs.isBlackInDanger();
-    if(condition)
-        console.log('met le roi en danger');
-    if(!this.findTileValidMoves(fromX, fromY).includes(move))
-        console.log(this.findTileValidMoves(fromX, fromY));
-        console.log(this.pieceToMove[this.pieceToMove.length -1]);    
-    //console.log("le move n'est pas inclue");
-    
-
     return this.findTileValidMoves(fromX, fromY).includes(move) && !condition;
    } 
 
@@ -197,33 +189,7 @@ class GameManager{
                     endingTile.setPiece(pieceColour +"-"+piecePromotion+"-"+index.toString());
                 }
             }
-                /*
-                var cibleX = pieceColour == "white"?7:0;
-
-                if(toX == cibleX){
-                    //le pion peut devenir ce qu'il veut
-                    //queen, rook, knight, bishop
-                    var piecePromotion = prompt("The pawn is being promoted to a :", "queen").toLowerCase();
-                    delete this.pieces[piece];
-
-                    if(piecePromotion == "queen"){
-                        this.pieces[pieceColour + '-'+piecePromotion+'-'+'0'] = new Queen(toX, toY, true, pieceColour);
-                    }else if(piecePromotion == "bishop"){
-                        this.pieces[pieceColour + '-'+piecePromotion+'-'+'0'] = new Bishop(toX, toY, true, pieceColour);
-                    }else if(piecePromotion == "rook"){
-                        this.pieces[pieceColour + '-'+piecePromotion+'-'+'0'] = new Rook(toX, toY, true, pieceColour);
-                    }else if(piecePromotion == "knight"){
-                        this.pieces[pieceColour + '-'+piecePromotion+'-'+'0'] = new Knight(toX, toY, true, pieceColour);
-                    }
-                    console.log(piecePromotion);
-
-                   
-                    endingTile.setPiece(pieceColour +"-"+piecePromotion+"-1");
-                }
-            }
-
-            */
-
+                
             if(pieceType == "king"){
                 this.pieces[piece].numberOfMoves = 1;
                 if(this.pieces[piece].switchWithRook()){

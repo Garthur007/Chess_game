@@ -1,6 +1,7 @@
-class Pawn{
+class Pawn extends Piece{
 
     constructor(x, y, alive, colour, index){
+		super(x,y,alive, colour,index, "pawn");
 		this.hasJumped = false;
         this.x = x;
         this.y = y;

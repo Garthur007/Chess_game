@@ -1,15 +1,6 @@
-class Queen{
+class Queen extends Piece{
     constructor(x,y, alive, colour, index = 1){
-        const w = 8;
-        this.x = x;
-        this.y = y;
-        this.alive = alive;
-		this.index =0;
-		this.nextIndex = this.index + 1;
-        this.colour = colour;
-        this.possibleMoves = [];
-        this.type = "queen";
-        
+		super(x,y,alive, colour, index = 0,"queen");   
 	}
 	
     update_possible_moves(gameboard){

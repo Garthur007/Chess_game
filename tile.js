@@ -2,7 +2,6 @@ const blackPieces = {rook:"♜", knight:"♞",bishop: "♝", queen: "♛",king:"
 const whitePieces = {pawn:"♙",rook: "♖", knight:"♘",bishop: "♗",queen: "♕", king:"♔"};  
 
 class Tile{
-
     constructor(x, y){
         this.x = x;
         this.y = y;
@@ -11,8 +10,7 @@ class Tile{
         this.occupant = "";
         this.occupantType = "";
         this.colour = "";
-        this.idTile = x.toString() + y.toString();
-        this.id = this.x.toString() + this.y.toString();
+        this.toString = () => {return this.x.toString() + this.y.toString();}
     }
     setPiece(occ, actualGame = true){
         this.reset(actualGame);
@@ -25,12 +23,12 @@ class Tile{
     }
     setSymbolOnTile(){
         var symbol = this.colour == "white"?whitePieces[this.occupantType]: blackPieces[this.occupantType];
-        var doc = document.getElementById('t' + this.id);
+        var doc = document.getElementById('t' + this.toString());
         doc.setAttribute('value', symbol);
     }
     reset(actualGame = true){
         if(actualGame){
-            var doc = document.getElementById('t' + this.id);
+            var doc = document.getElementById('t' + this.toString());
             doc.setAttribute('value', "");
         }
         this.occupantType = "";
@@ -38,8 +36,7 @@ class Tile{
         this.colour = ";"
         this.isOccupied = false;
     }
-
-    copy(){
+    clone(){
         var newCopy = new Tile(this.x, this.y);
         newCopy.nbClick = this.nbClick;
         newCopy.isOccupied = this.isOccupied;

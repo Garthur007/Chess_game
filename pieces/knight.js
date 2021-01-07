@@ -1,5 +1,6 @@
-class Knight{
+class Knight extends Piece{
     constructor(x,y, alive, colour, index){
+        super(x,y, alive, colour, index, "knight");
         this.w = 8;
         this.x = x;
         this.y = y;

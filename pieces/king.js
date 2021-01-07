@@ -1,20 +1,10 @@
-class King{
+class King extends Piece{ 
     constructor(x,y, alive, colour, index = 0){
+        super(x,y, alive, colour, index, "king");
+
         this.hasJump = false;
         
-        this.w = 8;
-        this.x = x;
-        this.y = y;
-        this.index = 0;
-        this.nextIndex = this.index + 1;
-        this.alive =  alive;
-        this.colour = colour;
-        this.possibleMoves = [];
-        this.type = "king";
-
-        this.toString =()=>{
-            return this.colour + '-' + this.type + '-'+this.index;
-        };
+        this.inDanger = false;
         this.switchWithRook =  () =>{
             var posTemp = this.colour == "white"?0:7;
             if(this.x == posTemp && this.y == 6){
@@ -48,7 +38,7 @@ class King{
 			}
         }
         
-        if(!this.hasJump)
+        if(!this.hasJump && !this.inDanger)
             if(Board.isInbound(this.y + 2) && !gameboard.findTile(this.x, this.y + 2).isOccupied && 
             !gameboard.findTile(this.x, this.y + 1).isOccupied)
                 this.possibleMoves.push(this.x.toString()+ (this.y + 2).toString());
