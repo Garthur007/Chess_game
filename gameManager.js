@@ -118,7 +118,6 @@ class GameManager{
 
    makeMove(fromX, fromY, toX, toY){
         if(this.isValidMove(fromX, fromY, toX, toY)){
-
             var startingTile = this.gameboard.findTile(fromX, fromY);
             var endingTile = this.gameboard.findTile(toX, toY);
             var piece = this.gameboard.findOccupant(fromX, fromY);
@@ -179,11 +178,11 @@ class GameManager{
                     if(piecePromotion == "queen"){
                         this.pieces[pieceColour + '-'+piecePromotion+'-'+index.toString()] = new Queen(toX, toY, true, pieceColour);
                     }else if(piecePromotion == "bishop"){
-                        this.pieces[pieceColour + '-'+piecePromotion+'-'+'0'] = new Bishop(toX, toY, true, pieceColour);
+                        this.pieces[pieceColour + '-'+piecePromotion+'-'+index.toString()] = new Bishop(toX, toY, true, pieceColour);
                     }else if(piecePromotion == "rook"){
-                        this.pieces[pieceColour + '-'+piecePromotion+'-'+'0'] = new Rook(toX, toY, true, pieceColour);
+                        this.pieces[pieceColour + '-'+piecePromotion+'-'+index.toString()] = new Rook(toX, toY, true, pieceColour);
                     }else if(piecePromotion == "knight"){
-                        this.pieces[pieceColour + '-'+piecePromotion+'-'+'0'] = new Knight(toX, toY, true, pieceColour);
+                        this.pieces[pieceColour + '-'+piecePromotion+'-'+index.toString()] = new Knight(toX, toY, true, pieceColour);
                     }
                     
                     endingTile.setPiece(pieceColour +"-"+piecePromotion+"-"+index.toString());
@@ -209,12 +208,44 @@ class GameManager{
                 this.isGameOver = true;
                 alert("congrats fucker la partie est terminé");
             }
+
+            if(!this.isWhitesTurn)
+                              {
+                                setTimeout( ()=>{
+
+                                    let gs = new GameState(0,0,0,0, this.pieces, this.gameboard);    
+                                let rAi = new Retarded_Ai(gs);
+
+                                var compteur = 0;
+                                var rMove = rAi.randomMove();
+                                var fromXa = parseInt(rMove[0]);
+                                var fromYa = parseInt(rMove[1]);
+                                var toXa = parseInt(rMove[2]);
+                                var toYa = parseInt(rMove[3]);
+                                while(this.makeMove(fromXa, fromYa, toXa, toYa)== false){
+                                    var rMove2 = rAi.randomMove();
+                                    var fromXa2 = parseInt(rMove2[0]);
+                                    var fromYa2 = parseInt(rMove2[1]);
+                                    var toXa2 = parseInt(rMove2[2]);
+                                    var toYa2 = parseInt(rMove2[3]);
+                                    this.makeMove(fromXa2, fromYa2, toXa2, toYa2); 
+                                    compteur++;
+                                    if(compteur > 100)
+                                        break;
+                                }
+                                
+                                }, 1000);
+                                
+                                
+                              }
     
         }else{
             console.log("invalid move");
+            return false;
         }
 
    }
+
 
     setEventHandlerOnClick(){
         buttons.forEach((button)=>{
@@ -257,7 +288,6 @@ class GameManager{
                                     console.log("C'est null : " + pos);
                                 doc.style.background = null;
                             });
-
                             this.makeMove(fromX, fromY, toX, toY);
                             this.clickCount=0;
                             //this.pieceToMove.pop();
@@ -273,8 +303,6 @@ class GameManager{
 }
 
 class GameState{
-
-    //this is what the game would look like if we took a snapchot of it
     constructor(fromX, fromY, toX, toY, pieces, gb){
         this.pieces = {};
         this.gameboard = gb.clone();
@@ -294,6 +322,10 @@ class GameState{
 
             if(tileB.isOccupied){
                 var ennemy = tileB.occupant;
+                if(this.pieces[ennemy] == null)
+                {
+                    console.log(ennemy);
+                }
                 this.pieces[ennemy].alive = false;
             }
 
@@ -342,31 +374,29 @@ class GameState{
             gameOver = false;
         return gameOver;
     }
+
     copyPieces(pieces){
-        for(var key in pieces){
+        for(var key in pieces)
             this.pieces[key] = pieces[key].clone();
-         }
-         for(var key in pieces){
+         for(var key in pieces)
             this.pieces[key].update_possible_moves(this.gameboard, this.pieces);
-            
-         }
     }
 
     isWhiteInDanger(){
         return this.checkIfColorInDanger('white');
     }
+    
     checkIfColorInDanger(colour){
         var c = colour == 'white'?'black':'white';
         var xKing = this.pieces[colour+"-king-0"].x;
         var yKing = this.pieces[colour+"-king-0"].y;
 
         var posKing = xKing.toString()+yKing.toString();
-        for(var key in this.pieces){
-            if(key.split('-')[0]==c && this.pieces[key].alive){
+
+        for(var key in this.pieces)
+            if(key.split('-')[0]==c && this.pieces[key].alive)
                 if(this.pieces[key].possibleMoves.includes(posKing))
                     return true;
-            }
-        }
         return false;
     }
 

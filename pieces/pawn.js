@@ -3,41 +3,29 @@ class Pawn extends Piece{
     constructor(x, y, alive, colour, index){
 		super(x,y,alive, colour,index, "pawn");
 		this.hasJumped = false;
-        this.x = x;
-        this.y = y;
-		this.colour =  colour;
+        
 		this.direction = this.colour == "white" ? 1 : -1;
-		this.ennemyColour = this.colour =="white"?"black":"white";
-		this.alive = alive;
-		this.index = index;
-        this.possibleMoves =  [];
+	
 		this.numberOfMoves = 0;
-		this.type = "pawn";
 		this.canEatSide =  false;
     }
-
-	//Dernière méthode puis c'est finie!
     update_possible_moves(gameboard, pieces, lastMoves =null, k=1){ 
 
        this.possibleMoves.splice(0,this.possibleMoves.length);
 		var xtemp = this.x + this.direction;
 
-		for (var i = -1; i < 2; i++)
-		{
+		for (var i = -1; i < 2; i++){
 			var ytemp = this.y + i;
-			if (Board.isInbound(xtemp, ytemp))
-			{
-				if (i != 0)
-				{
-					if (gameboard.findTile(xtemp, ytemp).isOccupied && gameboard.findTile(xtemp, ytemp).colour == this.ennemyColour)
+			if (Board.isInbound(xtemp, ytemp)){
+				if (i != 0){
+					if (gameboard.findTile(xtemp, ytemp).isOccupied 
+					&& gameboard.findTile(xtemp, ytemp).colour != this.colour)
 						this.possibleMoves.push(xtemp.toString() + ytemp.toString());
 
-					if (gameboard.findTile(this.x, ytemp).isOccupied && gameboard.findTile(this.x, ytemp).colour == this.ennemyColour)
-					{
+					if (gameboard.findTile(this.x, ytemp).isOccupied && gameboard.findTile(this.x, ytemp).colour != this.colour){
 						var tempPawnTile = gameboard.findTile(this.x, ytemp);
 						var occ = gameboard.findOccupant(this.x, ytemp);
 							
-
 						var condition = true;
 						if(lastMoves != null){
 							var currentX = this.x;
@@ -47,35 +35,26 @@ class Pawn extends Piece{
 
 							if(toX - currentX == this.direction &&
 								toY - currentY != 0){
-									//console.log("called 1");
 									var ennemyTile = gameboard.findTile(currentX,toY);
-									//console.log(ennemyTile);
 									if(ennemyTile.isOccupied && 
 									ennemyTile.occupantType =="pawn" &&
 									ennemyTile.colour != this.colour){
 									
 										var lastMoveTile = lastMoves[lastMoves.length-k];
-										console.log(lastMoveTile);
 										var x = parseInt(lastMoveTile[1]);
 										var y = parseInt(lastMoveTile[2]);
 									
-										if(x != currentX || y != toY)
-											{
-												console.log(lastMoveTile);
-												console.log("Rien á signaler");
-											}else if(tempPawnTile.occupantType == "pawn" && 
-											pieces[occ].numberOfMoves == 1
-											&& pieces[occ].hasJumped && condition){
-											this.possibleMoves.push((this.x + this.direction).toString()+ytemp.toString());
-									}
+										if(x == currentX && y == toY && tempPawnTile.occupantType == "pawn" &&
+										pieces[occ].numberOfMoves == 1 &&
+										pieces[occ].hasJumped & condition)
+												this.possibleMoves.push((this.x + this.direction).toString()+ytemp.toString());
+											
 									}
 								}
-
 						}else if(tempPawnTile.occupantType == "pawn" && 
 								pieces[occ].numberOfMoves == 1
-								&& pieces[occ].hasJumped && condition){
+								&& pieces[occ].hasJumped && condition)
 								this.possibleMoves.push((this.x + this.direction).toString()+ytemp.toString());
-						}
 					}
 				}
 				else if (!gameboard.findTile(xtemp, ytemp).isOccupied)
