@@ -1,3 +1,42 @@
+function createBoard(gameboard){
+    var body = document.body;
+    var table =  document.createElement('table');
+
+    table.setAttribute('class', 'chess-board');
+    var tbody =  document.createElement('tbody');
+
+    tbody.setAttribute('class', 'body');
+
+    for(var i = 0; i <w;i++){
+        var tr = document.createElement('tr');
+        for(var j =0; j < w; j++){
+            var td = document.createElement('td');
+
+            var colour;
+            if(i%2==0)
+                colour = (i*w + j)%2==0?light:dark;
+            else
+                colour = (i*w + j)%2!=0?light:dark;
+            td.setAttribute('class', colour);
+
+            var id = 't'+(7 -i).toString() + j.toString();
+
+            var btn = document.createElement('input');
+            btn.setAttribute('type', "button");
+            btn.setAttribute('class', id);
+            btn.setAttribute('id', id);
+            btn.setAttribute('value', gameboard.findTile(7-i,j).value);
+            //...
+            td.appendChild(btn);
+            tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    body.appendChild(table);
+}
+
+
 class Node{
     constructor(gs, parentNode = null){
         this.T = 0;
@@ -73,7 +112,7 @@ class GameState{
                 }
             }
         }else if(this.isBlackInDanger()){
-            console.log('les noirs sont en danger');
+           
             for(var key in this.pieces){
                 if(key.split("-")[0] == "black" && this.pieces[key].alive){
                     this.pieces[key].possibleMoves.forEach((move)=>{
@@ -121,12 +160,18 @@ class GameState{
     }
 
    isValidMove(fromX, fromY, toX, toY){
+
+    if(!this.gameboard.findTile(fromX, fromY).isOccupied)
+        return null;
+
     var move = toX.toString()+ toY.toString();
 
     var atq = new Attack(fromX, fromY, toX, toY);
 
     var currentGameState = new GameState(this.pieces, this.gameboard, this.movesHistory);
     var gs = GameState.Next_GameState(this,atq);
+
+    
     var condition = this.isWhiteTurn?gs.isWhiteInDanger():gs.isBlackInDanger();
     //console.log("c'est le tour des blanc? : "+ this.isWhiteTurn + " et le move met en danger la reine? : " + condition);
     return this.findTileValidMoves(fromX, fromY).includes(move) && !condition;
@@ -195,9 +240,12 @@ class GameState{
         var piece = nextGameState.gameboard.findOccupant(fromX, fromY);
         if(piece == null)
             {
+                createBoard(nextGameState.gameboard);
                 console.log("La piece est nulle");
                 console.log(nextGameState.gameboard.findTile(fromX, fromY));
                 console.log(fromX,fromY);
+                 
+                return null;
             }
         var pieceType = piece.split('-')[1];
         var pieceColour = piece.split('-')[0];
@@ -274,7 +322,7 @@ class GameState{
 const win = 1000;
 const loss = -1000;
 const time_exceeded = 0;
-const max_loop = 20;
+const max_loop = 100;
 
 const maxR = 100;
 
@@ -289,9 +337,7 @@ class Montecarlo_TS{
         this.start();
     }
     start(){
-        console.log("avant");
         this.execution(this.rootNode);
-        console.log("après");
     }
     find_best_move(){
         var t = this.find_greatest_UCB1(this.rootNode);
@@ -302,12 +348,18 @@ class Montecarlo_TS{
         var toX = parseInt(t.nodeGameState.movesHistory[nb - 1][0]);
         var toY = parseInt(t.nodeGameState.movesHistory[nb - 1][1]);
 
+        for(var i = 0; i < this.rootNode.childNodes.length; i++){
+            console.log(this.rootNode.childNodes[i].ucb1());
+        }
+        //console.log(this.rootNode);
+
         return new Attack(fromX, fromY, toX, toY);
     }
 
     stop(){
         return this.nbr > maxR;
     }
+
     find_greatest_UCB1(node){  
         //this method will return the child node with the greatest UCB1
         if(this.stop()) {
@@ -322,7 +374,7 @@ class Montecarlo_TS{
 
         var n = node.childNodes[0];
         var greatestUCB1 = n.ucb1();
-
+        //console.log(node.childNodes.length);
         for(var i = 1; i < node.childNodes.length; i++){
             if(node.childNodes[i].ucb1() > greatestUCB1){
                 greatestUCB1 = node.childNodes[i].ucb1();
@@ -341,6 +393,7 @@ class Montecarlo_TS{
             this.explorer_node(node);
         
         var highestUCB1Node = this.find_greatest_UCB1(node);
+        //console.log("le plus haut ucb1 : " +  highestUCB1Node.ucb1());
         this.iterate(highestUCB1Node);
     }
 
@@ -349,8 +402,8 @@ class Montecarlo_TS{
         if (node.N == 0){
             var add = this.random_game_simulation(node.nodeGameState,0);
             node.T += add;
-            node.N++;
-
+            node.N += 1;
+            
             this.backprogation(node);
             this.execution(this.rootNode);
         }
@@ -367,7 +420,7 @@ class Montecarlo_TS{
         else
         {
             node.parentNode.T += node.T;
-            node.parentNode.N++;
+            node.parentNode.N += 1;
             this.backprogation(node.parentNode);
         }
     }
@@ -383,12 +436,12 @@ class Montecarlo_TS{
             return;
            
         for(var i =0; i < possibleAttacks.length; i++){
-            //console.log("yo");
+
             var possibleGameState = GameState.Next_GameState(node.nodeGameState, possibleAttacks[0]);
             node.add_child(new Node(possibleGameState, node));
         }
+        //console.log("il y'a ce nombre de game state possible : " + node.childNodes.length);
     }
-
     random_game_simulation(gameState, stop){
         if(this.stop())
             return;
@@ -400,17 +453,18 @@ class Montecarlo_TS{
         }
         else if(gameState.checkIfGameOver()){
             this.lastGameState = gameState;
+            console.log("the winner is  : " +gameState.winner);
             return gameState.winner == "black"?win:loss;
         }
     
         var atq;
         
         if(stop % 2 == 0){
-            atq = gameState.get_random_attack("white");
+            atq = gameState.get_random_attack("black");
             if(atq == null)
                 return win;
         }else{
-            atq = gameState.get_random_attack("black");
+            atq = gameState.get_random_attack("white");
             if(atq == null)
                 return loss;
         }

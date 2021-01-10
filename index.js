@@ -4,8 +4,8 @@ var game = new GameManager();
 //con
 
 function findBestMove(){
-    var gs = game.get_current_gameState();
-    var mcts = new Montecarlo_TS(gs);
+    //var gs = game.get_current_gameState();
+    //var mcts = new Montecarlo_TS(gs);
 }
 findBestMove();
 
