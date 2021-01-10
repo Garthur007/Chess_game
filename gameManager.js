@@ -1,52 +1,49 @@
 const buttons =  document.querySelectorAll("input");
-const whiteColour = "white";
-const blackColour ="black";
+
 class GameManager{
 
     constructor(){
         this.gameboard = new Board(this);
         this.isGameOver = false;
         
-
-
         this.isWhitesTurn = true;
         this.isBlacksTurn = !this.isWhitesTurn;
         
         this.pieceToMove = [];
         this.clickCount = 0;
         this.pieces = {
-            "white-pawn-0": new Pawn(1,0, true, whiteColour, 0, this.gameboard),
-            "white-pawn-1": new Pawn(1,1, true, whiteColour, 1, this.gameboard),
-            "white-pawn-2": new Pawn(1,2, true, whiteColour, 2, this.gameboard), 
-            "white-pawn-3": new Pawn(1,3, true, whiteColour, 3, this.gameboard),
-            "white-pawn-4": new Pawn(1,4, true, whiteColour, 4, this.gameboard),
-            "white-pawn-5": new Pawn(1,5, true, whiteColour, 5, this.gameboard),
-            "white-pawn-6": new Pawn(1,6, true, whiteColour, 6, this.gameboard),
-            "white-pawn-7": new Pawn(1,7, true, whiteColour, 7, this.gameboard),
-            "white-king-0": new King(0,4, true, whiteColour, this.gameboard), 
-            "white-queen-0":new Queen(0,3, true, whiteColour, this.gameboard),
-            "white-bishop-0": new Bishop(0,2, true, whiteColour, 0, this.gameboard),
-            "white-bishop-1": new Bishop(0,5, true, whiteColour, 1, this.gameboard),
-            "white-rook-0": new Rook(0,0, true, whiteColour, 0, this.gameboard),
-            "white-rook-1": new Rook(0,7, true, whiteColour, 1, this.gameboard),
-            "white-knight-0": new Knight(0,1,true, whiteColour, 0, this.gameboard),
-            "white-knight-1": new Knight(0,6,true, whiteColour, 1, this.gameboard),
-            "black-pawn-0": new Pawn(6,0, true, blackColour, 0, this.gameboard),
-            "black-pawn-1": new Pawn(6,1, true, blackColour, 1, this.gameboard),
-            "black-pawn-2": new Pawn(6,2, true, blackColour, 2, this.gameboard), 
-            "black-pawn-3": new Pawn(6,3, true, blackColour, 3, this.gameboard),
-            "black-pawn-4": new Pawn(6,4, true, blackColour, 4, this.gameboard),
-            "black-pawn-5": new Pawn(6,5, true, blackColour, 5, this.gameboard),
-            "black-pawn-6": new Pawn(6,6, true, blackColour, 6, this.gameboard),
-            "black-pawn-7": new Pawn(6,7, true, blackColour, 7, this.gameboard),
-            "black-king-0": new King(7,4, true, blackColour, this.gameboard), 
-            "black-queen-0":new Queen(7,3, true, blackColour, this.gameboard),
-            "black-bishop-0": new Bishop(7,2, true, blackColour, 0, this.gameboard),
-            "black-bishop-1": new Bishop(7,5, true, blackColour, 1, this.gameboard),
-            "black-rook-0": new Rook(7,0, true,blackColour, 0, this.gameboard),
-            "black-rook-1": new Rook(7,7, true, blackColour, 1, this.gameboard),
-            "black-knight-0": new Knight(7,1,true, blackColour, 0, this.gameboard),
-            "black-knight-1": new Knight(7,6,true, blackColour, 1, this.gameboard)
+            "white-pawn-0": new Pawn(1,0, true, white, 0, this.gameboard),
+            "white-pawn-1": new Pawn(1,1, true, white, 1, this.gameboard),
+            "white-pawn-2": new Pawn(1,2, true, white, 2, this.gameboard), 
+            "white-pawn-3": new Pawn(1,3, true, white, 3, this.gameboard),
+            "white-pawn-4": new Pawn(1,4, true, white, 4, this.gameboard),
+            "white-pawn-5": new Pawn(1,5, true, white, 5, this.gameboard),
+            "white-pawn-6": new Pawn(1,6, true, white, 6, this.gameboard),
+            "white-pawn-7": new Pawn(1,7, true, white, 7, this.gameboard),
+            "white-king-0": new King(0,4, true, white, this.gameboard), 
+            "white-queen-0":new Queen(0,3, true, white, this.gameboard),
+            "white-bishop-0": new Bishop(0,2, true, white, 0, this.gameboard),
+            "white-bishop-1": new Bishop(0,5, true, white, 1, this.gameboard),
+            "white-rook-0": new Rook(0,0, true, white, 0, this.gameboard),
+            "white-rook-1": new Rook(0,7, true, white, 1, this.gameboard),
+            "white-knight-0": new Knight(0,1,true, white, 0, this.gameboard),
+            "white-knight-1": new Knight(0,6,true, white, 1, this.gameboard),
+            "black-pawn-0": new Pawn(6,0, true, black, 0, this.gameboard),
+            "black-pawn-1": new Pawn(6,1, true, black, 1, this.gameboard),
+            "black-pawn-2": new Pawn(6,2, true, black, 2, this.gameboard), 
+            "black-pawn-3": new Pawn(6,3, true, black, 3, this.gameboard),
+            "black-pawn-4": new Pawn(6,4, true, black, 4, this.gameboard),
+            "black-pawn-5": new Pawn(6,5, true, black, 5, this.gameboard),
+            "black-pawn-6": new Pawn(6,6, true, black, 6, this.gameboard),
+            "black-pawn-7": new Pawn(6,7, true, black, 7, this.gameboard),
+            "black-king-0": new King(7,4, true, black, this.gameboard), 
+            "black-queen-0":new Queen(7,3, true, black, this.gameboard),
+            "black-bishop-0": new Bishop(7,2, true, black, 0, this.gameboard),
+            "black-bishop-1": new Bishop(7,5, true, black, 1, this.gameboard),
+            "black-rook-0": new Rook(7,0, true,black, 0, this.gameboard),
+            "black-rook-1": new Rook(7,7, true, black, 1, this.gameboard),
+            "black-knight-0": new Knight(7,1,true, black, 0, this.gameboard),
+            "black-knight-1": new Knight(7,6,true, black, 1, this.gameboard)
 
         };
 
@@ -204,7 +201,7 @@ class GameManager{
                 
                 this.makeMove(atk.fromX, atk.fromY, atk.toX, atk.toY);
                 
-                }, 1500);
+                }, 500);
                 
                 
                 }

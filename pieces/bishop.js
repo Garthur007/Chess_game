@@ -9,7 +9,7 @@ class Bishop extends Piece{
         for (var i = 1; i < w; ++i){
 				var xtemp = this.x + i;
 				var ytemp = this.y - i;
-				if (Board.isInbound(xtemp, ytemp))
+				if (isInbound(xtemp, ytemp))
 					if (!gameboard.findTile(xtemp, ytemp).isOccupied)
 						this.possibleMoves.push(xtemp.toString() + ytemp.toString());
 					else if (gameboard.findTile(xtemp, ytemp).colour != this.colour){
@@ -23,7 +23,7 @@ class Bishop extends Piece{
         for (var i = 1; i < w; ++i){
             var xtemp = this.x + i;
             var ytemp = this.y + i;
-            if (Board.isInbound(xtemp, ytemp))
+            if (isInbound(xtemp, ytemp))
                 if (!gameboard.findTile(xtemp, ytemp).isOccupied)
                     this.possibleMoves.push(xtemp.toString() + ytemp.toString());
                 else if (gameboard.findTile(xtemp, ytemp).colour != this.colour)
@@ -38,7 +38,7 @@ class Bishop extends Piece{
         for (var i = 1; i < w; ++i){
             var xtemp = this.x - i;
             var ytemp = this.y - i;
-            if (Board.isInbound(xtemp, ytemp))
+            if (isInbound(xtemp, ytemp))
                 if (!gameboard.findTile(xtemp, ytemp).isOccupied)
                     this.possibleMoves.push(xtemp.toString() + ytemp.toString());
                 else if (gameboard.findTile(xtemp, ytemp).colour != this.colour){
@@ -53,7 +53,7 @@ class Bishop extends Piece{
         {
             var xtemp = this.x - i;
             var ytemp = this.y + i;
-            if (Board.isInbound(xtemp, ytemp))
+            if (isInbound(xtemp, ytemp))
                 if (!gameboard.findTile(xtemp, ytemp).isOccupied)
                     this.possibleMoves.push(xtemp.toString() + ytemp.toString());
                 else if (gameboard.findTile(xtemp, ytemp).colour != this.colour)

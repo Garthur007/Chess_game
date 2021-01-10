@@ -1,14 +1,24 @@
-function loadGame(pieces){
-    for(var key in pieces){
-        if(pieces[key].alive){
-            var occ = pieces.toString();
-            var x = pieces[key].x.toString();
-            var y = pieces[key].y.toString();
-            doc = document.getElementById('t'+x+y);
-        }
-    }
-}
-function createBoard(){
+const blackPieces = {rook:"♜", knight:"♞",bishop: "♝", queen: "♛",king:"♚",pawn:"♟"};
+const whitePieces = {pawn:"♙",rook: "♖", knight:"♘",bishop: "♗",queen: "♕", king:"♔"};  
+
+const w = 8;
+
+const white = "white";
+const black = "black";
+
+const light = "light";
+const dark = "dark";
+
+// For Montecarlo
+
+const win = 10000;
+const loss = -10000;
+const time_exceeded = 0;
+const max_loop = 5;
+
+const maxR = 2000;
+
+function createBoard(gameboard){
     var body = document.body;
     var table =  document.createElement('table');
 
@@ -35,6 +45,7 @@ function createBoard(){
             btn.setAttribute('type', "button");
             btn.setAttribute('class', id);
             btn.setAttribute('id', id);
+            btn.setAttribute('value', gameboard.findTile(7-i,j).value);
             //...
             td.appendChild(btn);
             tr.appendChild(td);
@@ -46,5 +57,5 @@ function createBoard(){
 }
 
 
-
-createBoard();
+function isInbound(a, b = 0 ){ return a >= 0 && a < 8 && b >= 0 && b < 8; }
+function randomNumber(k){ return  Math.floor((Math.random() * k-1) + 1);}

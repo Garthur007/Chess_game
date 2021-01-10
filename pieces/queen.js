@@ -11,7 +11,7 @@ class Queen extends Piece{
         for (var i = 1; i < 8; ++i)
 		{
 			var ytemp = this.y - i;
-			if (Board.isInbound(ytemp))
+			if (isInbound(ytemp))
 			{
 				if (!gameboard.findTile(this.x, ytemp).isOccupied)
 				{
@@ -33,7 +33,7 @@ class Queen extends Piece{
 		for (var i = 1; i < 8; ++i)
 		{
 			var ytemp = this.y + i;
-			if (Board.isInbound(ytemp))
+			if (isInbound(ytemp))
 			{
 				if (!gameboard.findTile(this.x, ytemp).isOccupied)
 				{
@@ -56,7 +56,7 @@ class Queen extends Piece{
 		{
 			
 			var xtemp = this.x - i;
-			if (Board.isInbound(xtemp))
+			if (isInbound(xtemp))
 			{
 				if (!gameboard.findTile(xtemp, this.y).isOccupied)
 				{
@@ -79,7 +79,7 @@ class Queen extends Piece{
 		{
 			
 			var xtemp = this.x + i;
-			if (Board.isInbound(xtemp))
+			if (isInbound(xtemp))
 			{
 				if (!gameboard.findTile(xtemp, this.y).isOccupied)
 				{
@@ -102,7 +102,7 @@ class Queen extends Piece{
 		{
 			var xtemp = this.x + i;
 			var ytemp = this.y - i;
-			if (Board.isInbound(xtemp, ytemp))
+			if (isInbound(xtemp, ytemp))
 			{
 				if (!gameboard.findTile(xtemp, ytemp).isOccupied)
 				{
@@ -126,7 +126,7 @@ class Queen extends Piece{
 			
 			var xtemp = this.x + i;
 			var ytemp = this.y + i;
-			if (Board.isInbound(xtemp, ytemp))
+			if (isInbound(xtemp, ytemp))
 			{
 				if (!gameboard.findTile(xtemp, ytemp).isOccupied)
 				{
@@ -150,7 +150,7 @@ class Queen extends Piece{
 			
 			var xtemp = this.x - i;
 			var ytemp = this.y - i;
-			if (Board.isInbound(xtemp, ytemp))
+			if (isInbound(xtemp, ytemp))
 			{
 				if (!gameboard.findTile(xtemp, ytemp).isOccupied)
 				{
@@ -173,7 +173,7 @@ class Queen extends Piece{
 		{
 			var xtemp = this.x - i;
 			var ytemp = this.y + i;
-			if (Board.isInbound(xtemp, ytemp))
+			if (isInbound(xtemp, ytemp))
 			{
 				if (!gameboard.findTile(xtemp, ytemp).isOccupied)
 				{

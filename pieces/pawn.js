@@ -4,19 +4,19 @@ class Pawn extends Piece{
 		super(x,y,alive, colour,index, "pawn");
 		this.hasJumped = false;
         
-		this.direction = this.colour == "white" ? 1 : -1;
+		this.direction = this.colour == white ? 1 : -1;
 	
 		this.numberOfMoves = 0;
 		this.canEatSide =  false;
     }
     update_possible_moves(gameboard, pieces, lastMoves =null, k=1){ 
 
-       this.possibleMoves.splice(0,this.possibleMoves.length);
+      this.resetMoves();
 		var xtemp = this.x + this.direction;
 
 		for (var i = -1; i < 2; i++){
 			var ytemp = this.y + i;
-			if (Board.isInbound(xtemp, ytemp)){
+			if (isInbound(xtemp, ytemp)){
 				if (i != 0){
 					if (gameboard.findTile(xtemp, ytemp).isOccupied 
 					&& gameboard.findTile(xtemp, ytemp).colour != this.colour)
@@ -60,7 +60,7 @@ class Pawn extends Piece{
 				else if (!gameboard.findTile(xtemp, ytemp).isOccupied)
 				{
 					this.possibleMoves.push(xtemp.toString() + ytemp.toString());
-					if (this.numberOfMoves == 0 && Board.isInbound(xtemp + this.direction)
+					if (this.numberOfMoves == 0 && isInbound(xtemp + this.direction)
 						 &&!gameboard.findTile(xtemp + this.direction, ytemp).isOccupied)
 						this.possibleMoves.push((xtemp +this.direction).toString() + ytemp.toString());	
 				}

@@ -17,7 +17,7 @@ class King extends Piece{
 			for (var j = -1; j < 2; ++j){
 				var xtemp = this.x + j;
                 var ytemp = this.y + i;
-				if (Board.isInbound(xtemp, ytemp) && (i != 0 || j != 0)){
+				if (isInbound(xtemp, ytemp) && (i != 0 || j != 0)){
 					var tempTile = gameboard.findTile(xtemp, ytemp);
 					if (!tempTile.isOccupied)
 						this.possibleMoves.push(xtemp.toString() + ytemp.toString());
@@ -28,7 +28,7 @@ class King extends Piece{
         
         
         if(!this.hasJump && !this.inDanger)
-            if(Board.isInbound(this.y + 2) && !gameboard.findTile(this.x, this.y + 2).isOccupied && 
+            if(isInbound(this.y + 2) && !gameboard.findTile(this.x, this.y + 2).isOccupied && 
             !gameboard.findTile(this.x, this.y + 1).isOccupied)
                 this.possibleMoves.push(this.x.toString()+ (this.y + 2).toString());
     }

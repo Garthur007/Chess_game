@@ -1,6 +1,0 @@
-Le jeu est finie!!!!!
-
-Je travaille maintenant sur montecarlo, que je vais modifié à ma facons;
-Dans la game simulation, le score dépendra aussi du nombre de pions importants ennemi qu'il mange
-ex. le score sera plus haut si il est capable de gagner la partie,
- manger une reine ou d'autres pions importants

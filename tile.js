@@ -1,6 +1,3 @@
-const blackPieces = {rook:"♜", knight:"♞",bishop: "♝", queen: "♛",king:"♚",pawn:"♟"};
-const whitePieces = {pawn:"♙",rook: "♖", knight:"♘",bishop: "♗",queen: "♕", king:"♔"};  
-
 class Tile{
     constructor(x, y){
         this.x = x;
@@ -40,6 +37,7 @@ class Tile{
         this.value = '';
         this.isOccupied = false;
     }
+
     clone(){
         var newCopy = new Tile(this.x, this.y);
         newCopy.isOccupied = this.isOccupied;
