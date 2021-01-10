@@ -216,6 +216,7 @@ class GameState{
 
         var possibleAttack = this.get_list_of_attacks(colour);
         var index = Board.randomNumber(possibleAttack.length);
+        //console.log("nombre d'attaque : " + possibleAttack.length + " attaque choisie : " + index);
         return possibleAttack[index];
    }
   
@@ -241,10 +242,10 @@ class GameState{
         var piece = nextGameState.gameboard.findOccupant(fromX, fromY);
         if(piece == null)
             {
-                createBoard(nextGameState.gameboard);
-                console.log("La piece est nulle");
-                console.log(nextGameState.gameboard.findTile(fromX, fromY));
-                console.log(fromX,fromY);
+                //createBoard(nextGameState.gameboard);
+                //console.log("La piece est nulle");
+                //console.log(nextGameState.gameboard.findTile(fromX, fromY));
+                //console.log(fromX,fromY);
                  
                 return null;
             }
@@ -323,9 +324,9 @@ class GameState{
 const win = 1000;
 const loss = -1000;
 const time_exceeded = 0;
-const max_loop = 100;
+const max_loop = 30;
 
-const maxR = 100;
+const maxR = 300;
 
 class Montecarlo_TS{
 
@@ -351,7 +352,15 @@ class Montecarlo_TS{
 
         for(var i = 0; i < this.rootNode.childNodes.length; i++){
             console.log(this.rootNode.childNodes[i].ucb1());
+            if(this.rootNode.childNodes[i].ucb1()> -5000){
+                var a = parseInt(this.rootNode.childNodes[i].nodeGameState.movesHistory[nb - 2][0]);
+                var b = parseInt(this.rootNode.childNodes[i].nodeGameState.movesHistory[nb - 2][1]);
+                var c = parseInt(this.rootNode.childNodes[i].nodeGameState.movesHistory[nb - 1][0]);
+                var d = parseInt(this.rootNode.childNodes[i].nodeGameState.movesHistory[nb - 1][1]);
+                console.log(a,b,c,d);
+             }
         }
+        console.log("-----------------------");
         //console.log(this.rootNode);
 
         return new Attack(fromX, fromY, toX, toY);
@@ -363,11 +372,7 @@ class Montecarlo_TS{
 
     find_greatest_UCB1(node){  
         //this method will return the child node with the greatest UCB1
-        if(this.stop()) {
-            console.log("the stop function was called");
-            //return null;
-        }
-        else if( node.childNodes.length == 0)
+        if( node.childNodes.length == 0)
         {
             console.log("there are no child nodes");
             return null;
@@ -382,6 +387,7 @@ class Montecarlo_TS{
                 n = node.childNodes[i];
             }
         }
+        //console.log(n);
         return n;
     }
 
@@ -438,11 +444,11 @@ class Montecarlo_TS{
            
         for(var i =0; i < possibleAttacks.length; i++){
 
-            var possibleGameState = GameState.Next_GameState(node.nodeGameState, possibleAttacks[0]);
+            var possibleGameState = GameState.Next_GameState(node.nodeGameState, possibleAttacks[i]);
             node.add_child(new Node(possibleGameState, node));
         }
-        //console.log("il y'a ce nombre de game state possible : " + node.childNodes.length);
-    }
+     }
+
     random_game_simulation(gameState, stop){
         if(this.stop())
             return;
@@ -471,7 +477,6 @@ class Montecarlo_TS{
         }
         
         var nextGameState = GameState.Next_GameState(gameState, atq);
-
         return this.random_game_simulation(nextGameState, stop + 1);
     }
 }
