@@ -91,33 +91,18 @@ class GameManager{
             var piece = this.pieces[key];
             var tile = this.gameboard.findTile(piece.x, piece.y);
             tile.setPiece(key);
-            //console.log(key);
         }
-        
    }
 
   
-
-   isValidMove(fromX, fromY, toX, toY){
-    var move = toX.toString()+ toY.toString();
-    
-    var gs = new GameState(fromX, fromY, toX, toY,this.pieces, this.gameboard);
-    var condition = this.isWhitesTurn?gs.isWhiteInDanger():gs.isBlackInDanger();
-    return this.findTileValidMoves(fromX, fromY).includes(move) && !condition;
-   } 
-
-   findTileValidMoves(fromX, fromY){
-        var id = this.gameboard.findOccupant(fromX, fromY);
-        var pieceToMove = this.pieces[id];
-
-        var test = this.clickCount == 0?1:2;
-        pieceToMove.update_possible_moves(this.gameboard, this.pieces, this.pieceToMove, this.clickCount +test );
-
-        return pieceToMove.possibleMoves;
+   get_current_gameState(){
+       var currentGs = new GameState(this.pieces, this.gameboard, this.pieceToMove);
+       currentGs.isWhiteTurn = this.isWhitesTurn;
+       return currentGs;
    }
 
    makeMove(fromX, fromY, toX, toY){
-        if(this.isValidMove(fromX, fromY, toX, toY)){
+        if(this.get_current_gameState().isValidMove(fromX, fromY, toX, toY)){
             var startingTile = this.gameboard.findTile(fromX, fromY);
             var endingTile = this.gameboard.findTile(toX, toY);
             var piece = this.gameboard.findOccupant(fromX, fromY);
@@ -202,13 +187,13 @@ class GameManager{
             }
 
             this.toggleTurn();
-            var currentGameState = new GameState(0,0,0,0,this.pieces, this.gameboard);
-            this.isGameOver = currentGameState.checkIfGameOver();
-            if(this.isGameOver){
+           
+            if(this.get_current_gameState().checkIfGameOver()){
+                //console.log(this.get_current_gameState());
                 this.isGameOver = true;
                 alert("congrats fucker la partie est terminé");
             }
-
+           /*
             if(!this.isWhitesTurn)
                               {
                                 setTimeout( ()=>{
@@ -237,7 +222,7 @@ class GameManager{
                                 }, 1000);
                                 
                                 
-                              }
+                              }*/
     
         }else{
             console.log("invalid move");
@@ -260,7 +245,7 @@ class GameManager{
 
                         if(this.gameboard.findTile(x , y).isOccupied && this.gameboard.findTile(x , y).colour == colourTurn){
                             var nbMovePossible = 0;
-                            this.findTileValidMoves(x,y).forEach((pos) => {
+                            this.get_current_gameState().findTileValidMoves(x, y).forEach((pos) => {
                                 nbMovePossible++;
                                 var doc =  document.getElementById('t'+pos);
                                 doc.style.background = '#8a1582';
@@ -282,7 +267,7 @@ class GameManager{
                         var toY = parseInt(this.pieceToMove[this.pieceToMove.length-1][2]);
 
                         if(fromX != toX || fromY !=toY){
-                            this.findTileValidMoves(fromX,fromY).forEach((pos) => {
+                            this.get_current_gameState().findTileValidMoves(fromX,fromY).forEach((pos) => {
                                 var doc =  document.getElementById('t'+pos);
                                 if(doc == null)
                                     console.log("C'est null : " + pos);
@@ -302,105 +287,3 @@ class GameManager{
     }
 }
 
-class GameState{
-    constructor(fromX, fromY, toX, toY, pieces, gb){
-        this.pieces = {};
-        this.gameboard = gb.clone();
-        this.copyPieces(pieces);
-        this.makeMove(fromX, fromY, toX, toY);
-    }
-
-    makeMove(fromX, fromY, toX, toY){
-        
-
-        if(fromX != toX || fromY!=toY){
-            var tileA = this.gameboard.findTile(fromX, fromY);
-            var tileB = this.gameboard.findTile(toX, toY);
-
-            var occ = tileA.occupant;
-            tileA.reset(false);
-
-            if(tileB.isOccupied){
-                var ennemy = tileB.occupant;
-                if(this.pieces[ennemy] == null)
-                {
-                    console.log(ennemy);
-                }
-                this.pieces[ennemy].alive = false;
-            }
-
-            tileB.setPiece(occ, false);
-            this.pieces[occ].x = toX;
-            this.pieces[occ].y = toY;
-
-            for(var key in this.pieces)
-                this.pieces[key].update_possible_moves(this.gameboard, this.pieces);
-        }
-    }
-    checkIfGameOver(){
-        var gameOver = true;
-        if(this.isWhiteInDanger()){
-            for(var key in this.pieces){
-                if(key.split("-")[0] == "white"&& this.pieces[key].alive){
-                    this.pieces[key].possibleMoves.forEach((move)=>{
-                        var fromX = this.pieces[key].x;
-                        var fromY = this.pieces[key].y;
-                        var toX = parseInt(move[0]);
-                        var toY =parseInt(move[1]);
-
-                        var nextGameState = new GameState(fromX, fromY, toX, toY, this.pieces, this.gameboard);
-                        if(!nextGameState.isWhiteInDanger())
-                            gameOver = false;
-                    });
-                }
-            }
-        }else if(this.isBlackInDanger()){
-            for(var key in this.pieces){
-                if(key.split("-")[0] == "black" && this.pieces[key].alive){
-                    this.pieces[key].possibleMoves.forEach((move)=>{
-                        var fromX = this.pieces[key].x;
-                        var fromY = this.pieces[key].y;
-                        var toX = parseInt(move[0]);
-                        var toY =parseInt(move[1]);
-                        var nextGameState = new GameState(fromX, fromY, toX, toY, this.pieces, this.gameboard);
-                        if(!nextGameState.isBlackInDanger()){
-                            gameOver = false;
-                        }
-                    });
-                }
-        
-            }
-        }else
-            gameOver = false;
-        return gameOver;
-    }
-
-    copyPieces(pieces){
-        for(var key in pieces)
-            this.pieces[key] = pieces[key].clone();
-         for(var key in pieces)
-            this.pieces[key].update_possible_moves(this.gameboard, this.pieces);
-    }
-
-    isWhiteInDanger(){
-        return this.checkIfColorInDanger('white');
-    }
-    
-    checkIfColorInDanger(colour){
-        var c = colour == 'white'?'black':'white';
-        var xKing = this.pieces[colour+"-king-0"].x;
-        var yKing = this.pieces[colour+"-king-0"].y;
-
-        var posKing = xKing.toString()+yKing.toString();
-
-        for(var key in this.pieces)
-            if(key.split('-')[0]==c && this.pieces[key].alive)
-                if(this.pieces[key].possibleMoves.includes(posKing))
-                    return true;
-        return false;
-    }
-
-    isBlackInDanger(){
-        return this.checkIfColorInDanger('black');
-    }
-}

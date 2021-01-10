@@ -28,5 +28,5 @@ class Board{
         return gbCopy;
     }
     static isInbound = (a, b = 0 ) => { return a >= 0 && a < 8 && b >= 0 && b < 8; }
-    static randomNumber = (k) => { return  Math.floor((Math.random() * k) + 1);}
+    static randomNumber = (k) => { return  Math.floor((Math.random() * k-1) + 1);}
 }

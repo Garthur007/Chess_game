@@ -1,17 +1,14 @@
-var game = new GameManager();
-//let gs = new GameStateT(game.pieces, game.gameboard, game.pieceToMove);    
-
-//con
-
-function findBestMove(){
-    var gs = game.get_current_gameState();
-    var mcts = new Montecarlo_TS(gs);
+function loadGame(pieces){
+    for(var key in pieces){
+        if(pieces[key].alive){
+            var occ = pieces.toString();
+            var x = pieces[key].x.toString();
+            var y = pieces[key].y.toString();
+            doc = document.getElementById('t'+x+y);
+        }
+    }
 }
-findBestMove();
-
-const light = "light";
-const dark = "dark";
-function createBoard(gameboard){
+function createBoard(){
     var body = document.body;
     var table =  document.createElement('table');
 
@@ -38,7 +35,6 @@ function createBoard(gameboard){
             btn.setAttribute('type', "button");
             btn.setAttribute('class', id);
             btn.setAttribute('id', id);
-            btn.setAttribute('value', gameboard.findTile(7-i,j).value);
             //...
             td.appendChild(btn);
             tr.appendChild(td);
@@ -51,4 +47,25 @@ function createBoard(gameboard){
 
 
 
-//createBoard(b.gameboard);
+createBoard();
+
+/**
+  <tr>
+                    <th>8</th>
+                    <td class="light">
+                        <input type="button" bouton class='t70' id="t70" value="♜">
+                       
+for(var i = 0; i <w;i++){
+        for(var j =0; j < w; j++){
+            //rien
+        }
+    }
+
+
+<td class="light">
+    <input type="button" bouton class='t70' id="t70" value="♜">
+    </input> 
+</td>
+
+
+*/
