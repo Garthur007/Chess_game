@@ -193,36 +193,21 @@ class GameManager{
                 this.isGameOver = true;
                 alert("congrats fucker la partie est terminé");
             }
-           /*
+           
             if(!this.isWhitesTurn)
-                              {
-                                setTimeout( ()=>{
+                {
+                setTimeout( ()=>{
 
-                                    let gs = new GameState(0,0,0,0, this.pieces, this.gameboard);    
-                                let rAi = new Retarded_Ai(gs);
-
-                                var compteur = 0;
-                                var rMove = rAi.randomMove();
-                                var fromXa = parseInt(rMove[0]);
-                                var fromYa = parseInt(rMove[1]);
-                                var toXa = parseInt(rMove[2]);
-                                var toYa = parseInt(rMove[3]);
-                                while(this.makeMove(fromXa, fromYa, toXa, toYa)== false){
-                                    var rMove2 = rAi.randomMove();
-                                    var fromXa2 = parseInt(rMove2[0]);
-                                    var fromYa2 = parseInt(rMove2[1]);
-                                    var toXa2 = parseInt(rMove2[2]);
-                                    var toYa2 = parseInt(rMove2[3]);
-                                    this.makeMove(fromXa2, fromYa2, toXa2, toYa2); 
-                                    compteur++;
-                                    if(compteur > 100)
-                                        break;
-                                }
-                                
-                                }, 1000);
-                                
-                                
-                              }*/
+                let gs = this.get_current_gameState();    
+                var mcts = new Montecarlo_TS(gs);
+                var atk = mcts.find_best_move();
+                
+                this.makeMove(atk.fromX, atk.fromY, atk.toX, atk.toY);
+                
+                }, 1500);
+                
+                
+                }
     
         }else{
             console.log("invalid move");

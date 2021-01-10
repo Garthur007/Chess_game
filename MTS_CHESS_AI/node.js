@@ -172,9 +172,7 @@ class GameState{
         var index = Board.randomNumber(possibleAttack.length);
         return possibleAttack[index];
    }
-   load_gameState(){
-       
-   }
+  
 
     static Next_GameState(currentGameState, attack){
         //we assume the attack is legal
@@ -294,7 +292,6 @@ class Montecarlo_TS{
         console.log("avant");
         this.execution(this.rootNode);
         console.log("après");
-        console.log(this.find_best_move());
     }
     find_best_move(){
         var t = this.find_greatest_UCB1(this.rootNode);
