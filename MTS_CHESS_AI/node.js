@@ -106,8 +106,9 @@ class GameState{
 
                         var nextGameState = GameState.Next_GameState(this, new Attack(fromX, fromY, toX, toY));
                         //var nextGameState = new GameStateM(fromX, fromY, toX, toY, this.pieces, this.gameboard);
-                        if(!nextGameState.isWhiteInDanger())
-                            gameOver = false;
+                        if(this.isValidMove(fromX, fromY, toX, toY))
+                            if(!nextGameState.isWhiteInDanger())
+                                gameOver = false;
                     });
                 }
             }
@@ -122,10 +123,10 @@ class GameState{
                         var toY =parseInt(move[1]);
                 
                         var nextGameState = GameState.Next_GameState(this, new Attack(fromX, fromY, toX, toY));
-                
-                         if(!nextGameState.isBlackInDanger()){
-                            gameOver = false;
-                        }
+                        if(this.isValidMove(fromX, fromY, toX, toY))
+                            if(!nextGameState.isBlackInDanger()){
+                                gameOver = false;
+                            }
                     });
                 }
         
