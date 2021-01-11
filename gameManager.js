@@ -1,14 +1,10 @@
 const buttons =  document.querySelectorAll("input");
-
 class GameManager{
 
     constructor(){
         this.gameboard = new Board(this);
         this.isGameOver = false;
-        
         this.isWhitesTurn = true;
-        this.isBlacksTurn = !this.isWhitesTurn;
-        
         this.pieceToMove = [];
         this.clickCount = 0;
         this.pieces = {
@@ -58,28 +54,16 @@ class GameManager{
             'black-queen':0
         };
 
-        this.compteurTest = 0;
-
-        this.whiteKingInDanger = false;
-        this.blackKingInDanger = false;
-
-
-
+        this.manual = false;
         this.lastMoves = [];
 
+        this.toggleTurn = () => {this.isWhitesTurn = !this.isWhitesTurn;};
         this.start();
-    }
+ }
 
-    toggleTurn(){
-        this.isWhitesTurn = !this.isWhitesTurn;
-    }
 
    start(){
         this.init_pieces_on_board();
-        this.gameboard.tiles.forEach((tile)=>{
-            //console.log(tile);
-        });
-
         this.setEventHandlerOnClick();
    } 
 
@@ -91,7 +75,6 @@ class GameManager{
         }
    }
 
-  
    get_current_gameState(){
        var currentGs = new GameState(this.pieces, this.gameboard, this.pieceToMove);
        currentGs.isWhiteTurn = this.isWhitesTurn;
@@ -186,25 +169,14 @@ class GameManager{
             this.toggleTurn();
            
             if(this.get_current_gameState().checkIfGameOver()){
-                //console.log(this.get_current_gameState());
                 this.isGameOver = true;
                 alert("congrats fucker la partie est terminé");
             }
            
-            if(!this.isWhitesTurn)
-                {
-                setTimeout( ()=>{
-
-                let gs = this.get_current_gameState();    
-                var mcts = new Montecarlo_TS(gs);
-                var atk = mcts.find_best_move();
-                
-                this.makeMove(atk.fromX, atk.fromY, atk.toX, atk.toY);
-                
-                }, 500);
-                
-                
-                }
+            if(!this.manual && !this.isWhitesTurn)
+            {
+                setTimeout(()=>{this.ai_move()},500)
+            }
     
         }else{
             console.log("invalid move");
@@ -212,25 +184,32 @@ class GameManager{
         }
 
    }
-
+   ai_move(){
+        let gs = this.get_current_gameState();    
+        var mcts = new Montecarlo_TS(gs);
+        var atk = mcts.find_best_move();
+        this.makeMove(atk.fromX, atk.fromY, atk.toX, atk.toY);
+   }
 
     setEventHandlerOnClick(){
         buttons.forEach((button)=>{
             button.addEventListener('click', ()=>{
                 if(!this.isGameOver){
                     if(this.clickCount == 0 ){
+                        //when we are selecting the tile
                         var fromTile =  button.getAttribute('id');
                         var x = parseInt(fromTile[1]);
                         var y = parseInt(fromTile[2]);
                         
-                        var colourTurn = this.isWhitesTurn?"white":"black";
+                        var colourTurn = this.isWhitesTurn?white:black;
 
                         if(this.gameboard.findTile(x , y).isOccupied && this.gameboard.findTile(x , y).colour == colourTurn){
                             var nbMovePossible = 0;
                             this.get_current_gameState().findTileValidMoves(x, y).forEach((pos) => {
+                                //this is to highlight all the possible moves of a piece
                                 nbMovePossible++;
                                 var doc =  document.getElementById('t'+pos);
-                                doc.style.background = '#8a1582';
+                                doc.style.background = 'green';
                             });
                             if(nbMovePossible!= 0){
                                 this.clickCount++;
@@ -251,14 +230,10 @@ class GameManager{
                         if(fromX != toX || fromY !=toY){
                             this.get_current_gameState().findTileValidMoves(fromX,fromY).forEach((pos) => {
                                 var doc =  document.getElementById('t'+pos);
-                                if(doc == null)
-                                    console.log("C'est null : " + pos);
                                 doc.style.background = null;
                             });
                             this.makeMove(fromX, fromY, toX, toY);
                             this.clickCount=0;
-                            //this.pieceToMove.pop();
-                            //this.pieceToMove.pop();
                         }else{
                             this.pieceToMove.pop();
                         }

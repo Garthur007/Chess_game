@@ -27,10 +27,11 @@ class GameState{
     }
 
     checkIfGameOver(){
+        this.update_all_possible_moves();
         var gameOver = true;
         if(this.isWhiteInDanger()){
             for(var key in this.pieces){
-                if(key.split("-")[0] == "white"&& this.pieces[key].alive){
+                if(key.split("-")[0] == white && this.pieces[key].alive){
                     this.pieces[key].possibleMoves.forEach((move)=>{
                         var fromX = this.pieces[key].x;
                         var fromY = this.pieces[key].y;
@@ -39,9 +40,9 @@ class GameState{
 
                         var nextGameState = GameState.Next_GameState(this, new Attack(fromX, fromY, toX, toY));
                         //var nextGameState = new GameStateM(fromX, fromY, toX, toY, this.pieces, this.gameboard);
-                        if(this.isValidMove(fromX, fromY, toX, toY))
-                            if(!nextGameState.isWhiteInDanger())
-                                gameOver = false;
+                        //if(this.isValidMove(fromX, fromY, toX, toY))
+                        if(!nextGameState.isWhiteInDanger())
+                            gameOver = false;
                     });
                 }
             }
@@ -56,10 +57,9 @@ class GameState{
                         var toY =parseInt(move[1]);
                 
                         var nextGameState = GameState.Next_GameState(this, new Attack(fromX, fromY, toX, toY));
-                        if(this.isValidMove(fromX, fromY, toX, toY))
-                            if(!nextGameState.isBlackInDanger()){
-                                gameOver = false;
-                            }
+                        if(!nextGameState.isBlackInDanger()){
+                            gameOver = false;
+                        }
                     });
                 }
         
@@ -67,7 +67,14 @@ class GameState{
         }else
             gameOver = false;
         if(gameOver)
-            this.winner = this.isBlackInDanger()?"white":"blacks";
+            this.winner = this.isBlackInDanger()?white:black;
+
+        if(!this.pieces['black-king-0'].alive ||!this.pieces['white-king-0'].alive)
+        {
+            console.log('yo le roi est mort');
+            this.winner = !this.pieces['black-king-0'].alive?white:black;
+            return true;
+        }
         return gameOver;
     }
 
@@ -103,7 +110,6 @@ class GameState{
 
     var atq = new Attack(fromX, fromY, toX, toY);
 
-    var currentGameState = new GameState(this.pieces, this.gameboard, this.movesHistory);
     var gs = GameState.Next_GameState(this,atq);
 
     
@@ -177,7 +183,7 @@ class GameState{
         if(piece == null)
             {
                 //createBoard(nextGameState.gameboard);
-                //console.log("La piece est nulle");
+                console.log("La piece est nulle");
                 //console.log(nextGameState.gameboard.findTile(fromX, fromY));
                 //console.log(fromX,fromY);
                  
