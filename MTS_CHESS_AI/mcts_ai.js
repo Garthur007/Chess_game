@@ -1,11 +1,10 @@
-var comtpeur = 0;
 class Montecarlo_TS{
 
-    constructor(gs){
-        this.nbr = 0;
+    constructor(gs, nbMove = 0){
         this.currentGameState = gs;
         this.lastGameState = null;
-
+        this.nbMove = nbMove;
+        this.maxL = nbMove >= 1? max_loop:1;
         this.rootNode = new Node(this.currentGameState);
         this.start();
     }
@@ -18,12 +17,14 @@ class Montecarlo_TS{
         var fromY = bestNode.atq.fromY;
         var toX = bestNode.atq.toX;
         var toY = bestNode.atq.toY;
-        console.log(this.rootNode);
+        //console.log(this.rootNode);
         return new Attack(fromX, fromY, toX, toY);
     }
 
     stop(){
-        return this.nbr > maxR;
+        //if(this.nbMove <= 3)
+          //  return this.rootNode.N > 50;
+        return this.rootNode.N > maxR;
     }
 
     find_greatest_UCB1(node){  
@@ -33,11 +34,11 @@ class Montecarlo_TS{
         
 
         var n = node.childNodes[0];
-        n.ucbone = n.get_ucb1_value();
+        //n.ucbone = n.get_ucb1_value();
         var greatestUCB1 = n.get_ucb1_value();
         //console.log(node.childNodes.length);
         for(var i = 1; i < node.childNodes.length; i++){
-            node.childNodes[i].ucbone = node.childNodes[i].get_ucb1_value();
+            //node.childNodes[i].ucbone = node.childNodes[i].get_ucb1_value();
             //console.log( node.childNodes[i].UCB1());
             if(node.childNodes[i].get_ucb1_value() > greatestUCB1){
                 greatestUCB1 = node.childNodes[i].get_ucb1_value();
@@ -61,7 +62,6 @@ class Montecarlo_TS{
     }
 
     iterate(node){
-        this.nbr++;
         if (this.stop() || node == null) 
             return;
         if (node.N == 0){
@@ -108,38 +108,18 @@ class Montecarlo_TS{
      }
 
     
-     score_from_gameState(gs){
-        var score = 0;
-        for(var key in gs.pieces){
-            if(gs.pieces[key].type != 'king'){
-                if(gs.pieces[key].colour == black){
-                    if(gs.pieces[key].alive){
-                        score += val[gs.pieces[key].type];
-                    }else{
-                        score -= val[gs.pieces[key].type];
-                    }
-                }else{
-                    if(gs.pieces[key].alive){
-                        score -= val[gs.pieces[key].type];
-                    }else{
-                        score += val[gs.pieces[key].type];
-                    }
-                }
-            }
-        }
-        return score;
-    }
-    
+
     random_game_simulation(gameState, stop){
-        if(stop > max_loop)
-            return gameState.pieces["black-queen-0"].alive?1:0;// sthis.score_from_gameState(gameState);
+        
+        if(stop > this.maxL)
+            return 0;//gameState.pieces["black-queen-0"].alive?1:0;// sthis.score_from_gameState(gameState);
         else if(gameState.checkIfGameOver()){
-            console.log(gameState.movesHistory);
+            //console.log(gameState.movesHistory);
             //Board.createBoard(gameState.gameboard);
-            this.lastGameState = gameState;
-            console.log(gameState.winner + ' : wins at ' + stop + " moves");
-            var score = gameState.winner == black?win:loss;
-            console.log(score);
+            //this.lastGameState = gameState;
+            //console.log(gameState.winner + ' : wins at ' + stop + " moves");
+            //var score = gameState.winner == black?win:loss;
+            //console.log(score);
             if(gameState.winner == black)
                 return win;
             else
@@ -151,7 +131,7 @@ class Montecarlo_TS{
         var atq = gameState.get_random_attack(attackingColour);
         if(atq == null){
             //createBoard(gameState.gameboard);
-            console.log("The colour did not have any more moves");
+            //console.log("The colour did not have any more moves");
             return attackingColour == "black"?loss:win;
         }
         //if(gameState.isWhiteInDanger()){

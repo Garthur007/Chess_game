@@ -53,7 +53,7 @@ class GameManager{
             'black-knight':1,
             'black-queen':0
         };
-
+        this.nbMove = 0;
         this.manual = false;
         this.lastMoves = [];
     
@@ -87,7 +87,7 @@ class GameManager{
             var endingTile = this.gameboard.findTile(toX, toY);
             var piece = startingTile.occupant;
 
-
+            this.nbMove++;
             var pieceType = piece.split('-')[1];
             var pieceColour = startingTile.colour;
 
@@ -166,19 +166,15 @@ class GameManager{
             this.toggleTurn();
            
             if(this.get_current_gameState().checkIfGameOver()){
-                var message = this.get_current_gameState().winner == white?
-                "Congradulation, you win!":"You lost to the machine!";
                 this.isGameOver = true;
-                alert(message);
+                alert("The game is over!");
             }
            
             if(!this.manual && !this.isWhitesTurn)
                 setTimeout(()=>{
-                   var mcts = new Montecarlo_TS(this.get_current_gameState());
+                   var mcts = new Montecarlo_TS(this.get_current_gameState(), this.nbMove);
                     var atk = mcts.find_best_move();
-                    //console.log(atk);
                     this.makeMove(atk.fromX, atk.fromY, atk.toX, atk.toY);
-                    //this.ai_move();
                 },500)
     
         }else{

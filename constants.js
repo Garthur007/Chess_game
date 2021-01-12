@@ -14,10 +14,10 @@ const dark = "dark";
 
 // For Montecarlo
 
-const win = 10;
-const loss = -10;
+const win = 100;
+const loss = -100;
 const time_exceeded = 0;
-const max_loop = 5;
+const max_loop = 15;
 const maxR = 1000;
 
 const val = {

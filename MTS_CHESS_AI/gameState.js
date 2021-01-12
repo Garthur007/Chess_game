@@ -61,12 +61,12 @@ class GameState{
             gameOver = false;
 
         if(gameOver){
-            console.log("on set le winner");
+            //console.log("on set le winner");
             this.winner = this.isBlackInDanger()?'white':'black';
         }
         if(!this.pieces["white-king-0"].alive || !this.pieces["black-king-0"].alive){
             this.winner = this.pieces["white-king-0"].alive?white:black;
-            console.log("Le king est mort");
+            //console.log("Le king est mort");
             return false;
         }
 
@@ -155,9 +155,15 @@ class GameState{
             }
         }
         var index = randomNumber(possibleAttack.length);
-        if(possibleAttack[index] == null)
-            console.log("nombre d'attaque : " + possibleAttack.length + " attaque choisie : " + index);
-        
+        if(possibleAttack[index] == null){
+           // console.log("nombre d'attaque : " + possibleAttack.length + " attaque choisie : " + index);
+            return;
+        }
+        if(possibleAttack[index].fromX == this.pieces[colour + "-king-0"].x && 
+        possibleAttack[index].fromY == this.pieces[colour + "-king-0"].y){
+            return possibleAttack[randomNumber(possibleAttack.length)];
+        }    
+
         return possibleAttack[index];
    }
  
