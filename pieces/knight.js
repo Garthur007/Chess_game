@@ -73,9 +73,8 @@ class Knight extends Piece{
 
     clone(){
         var clone = new Knight(this.x, this.y, this.alive, this.colour, this.index);
-        this.possibleMoves.forEach((move)=>{
-            clone.possibleMoves.push(move);
-        });
+        
+        clone.possibleMoves = [].concat(this.possibleMoves);
         return clone;
     }
 }

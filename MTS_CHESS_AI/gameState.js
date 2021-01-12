@@ -2,8 +2,8 @@ class GameState{
     constructor(pieces, board, moves){
         this.pieces = {};
         this.gameboard = board.clone();
-        this.movesHistory = [];
-        this.copyMovesHistory(moves);
+        this.movesHistory = [].concat(moves);
+        
         this.copyPieces(pieces);
         this.isWhiteTurn = false;
         this.winner = "";
@@ -12,12 +12,7 @@ class GameState{
             'black-queen':0
         };
     }
-    copyMovesHistory(moves){
-        moves.forEach((move)=>
-        {
-            this.movesHistory.push(move);
-        });
-    }
+
     copyPieces(pieces){
         for(var key in pieces)
             this.pieces[key] = pieces[key].clone();
@@ -37,17 +32,15 @@ class GameState{
                         var fromY = this.pieces[key].y;
                         var toX = parseInt(move[0]);
                         var toY =parseInt(move[1]);
-
+                        if(this.isValidMove(fromX, fromY, toX, toY)){
                         var nextGameState = GameState.Next_GameState(this, new Attack(fromX, fromY, toX, toY));
-                        //var nextGameState = new GameStateM(fromX, fromY, toX, toY, this.pieces, this.gameboard);
-                        //if(this.isValidMove(fromX, fromY, toX, toY))
                         if(!nextGameState.isWhiteInDanger())
-                            gameOver = false;
+                            gameOver = false;}
                     });
                 }
             }
         }else if(this.isBlackInDanger()){
-           
+
             for(var key in this.pieces){
                 if(key.split("-")[0] == "black" && this.pieces[key].alive){
                     this.pieces[key].possibleMoves.forEach((move)=>{
@@ -55,26 +48,28 @@ class GameState{
                         var fromY = this.pieces[key].y;
                         var toX = parseInt(move[0]);
                         var toY =parseInt(move[1]);
-                
+                        if(this.isValidMove(fromX, fromY, toX, toY)){
                         var nextGameState = GameState.Next_GameState(this, new Attack(fromX, fromY, toX, toY));
                         if(!nextGameState.isBlackInDanger()){
                             gameOver = false;
-                        }
+                        }}
                     });
                 }
         
             }
         }else
             gameOver = false;
-        if(gameOver)
-            this.winner = this.isBlackInDanger()?white:black;
 
-        if(!this.pieces['black-king-0'].alive ||!this.pieces['white-king-0'].alive)
-        {
-            console.log('yo le roi est mort');
-            this.winner = !this.pieces['black-king-0'].alive?white:black;
-            return true;
+        if(gameOver){
+            console.log("on set le winner");
+            this.winner = this.isBlackInDanger()?'white':'black';
         }
+        if(!this.pieces["white-king-0"].alive || !this.pieces["black-king-0"].alive){
+            this.winner = this.pieces["white-king-0"].alive?white:black;
+            console.log("Le king est mort");
+            return false;
+        }
+
         return gameOver;
     }
 
@@ -101,22 +96,20 @@ class GameState{
         return this.checkIfColorInDanger('black');
     }
 
-   isValidMove(fromX, fromY, toX, toY){
+    isValidMove(fromX, fromY, toX, toY){
 
-    if(!this.gameboard.findTile(fromX, fromY).isOccupied)
-        return null;
+        if(!this.gameboard.findTile(fromX, fromY).isOccupied)
+            return false;
 
-    var move = toX.toString()+ toY.toString();
-
-    var atq = new Attack(fromX, fromY, toX, toY);
-
-    var gs = GameState.Next_GameState(this,atq);
-
-    
-    var condition = this.isWhiteTurn?gs.isWhiteInDanger():gs.isBlackInDanger();
-    //console.log("c'est le tour des blanc? : "+ this.isWhiteTurn + " et le move met en danger la reine? : " + condition);
-    return this.findTileValidMoves(fromX, fromY).includes(move) && !condition;
-   } 
+        var move = toX.toString()+ toY.toString();
+        if(!this.findTileValidMoves(fromX, fromY).includes(move))
+            return false;
+        
+        var atq = new Attack(fromX, fromY, toX, toY);
+        var gs = GameState.Next_GameState(this,atq);
+        var condition = this.gameboard.findTile(fromX, fromY).colour == "white"?gs.isWhiteInDanger():gs.isBlackInDanger();
+        return !condition;
+    } 
 
    update_all_possible_moves(){
        for(var key in this.pieces){
@@ -153,110 +146,115 @@ class GameState{
     return possibleAttack;
    }
    get_random_attack(colour){
-
+    var ennemy = colour == white?black:white;
         var possibleAttack = this.get_list_of_attacks(colour);
+        for(var i = 0; i < possibleAttack.length; i++){
+            var pos = possibleAttack[i].toX.toString() + possibleAttack[i].toY.toString();
+            if(pos == this.pieces[ennemy + "-queen-0"].x.toString() +this.pieces[ennemy + "-queen-0"].y.toString()){
+                return possibleAttack[i];
+            }
+        }
         var index = randomNumber(possibleAttack.length);
-        //console.log("nombre d'attaque : " + possibleAttack.length + " attaque choisie : " + index);
+        if(possibleAttack[index] == null)
+            console.log("nombre d'attaque : " + possibleAttack.length + " attaque choisie : " + index);
+        
         return possibleAttack[index];
    }
-  
-
+ 
     static Next_GameState(currentGameState, attack){
-        //we assume the attack is legal
-        //on va assumer que le move est légal 
-        
-        var fromX = attack.fromX;
-        var fromY =  attack.fromY;
-        var toX = attack.toX;
-        var toY = attack.toY;
-        //if(!currentGameState.isValidMove(fromX, fromY, toX, toY))
-          //  console.log("illegal move");
-        var nextGameState = new GameState(currentGameState.pieces,
-             currentGameState.gameboard, currentGameState.movesHistory);
+    //we assume the attack is legal
+    //on va assumer que le move est légal 
 
-        nextGameState.movesHistory.push(fromX.toString() + fromY.toString());
-        nextGameState.movesHistory.push(toX.toString() + toY.toString());
+    var fromX = attack.fromX;
+    var fromY =  attack.fromY;
+    var toX = attack.toX;
+    var toY = attack.toY;
 
-        var startingTile = nextGameState.gameboard.findTile(fromX, fromY);
-        var endingTile = nextGameState.gameboard.findTile(toX, toY);
-        var piece = nextGameState.gameboard.findOccupant(fromX, fromY);
-        if(piece == null)
-            {
-                //createBoard(nextGameState.gameboard);
-                console.log("La piece est nulle");
-                //console.log(nextGameState.gameboard.findTile(fromX, fromY));
-                //console.log(fromX,fromY);
-                 
-                return null;
-            }
-        var pieceType = piece.split('-')[1];
-        var pieceColour = piece.split('-')[0];
+    var nextGameState = new GameState(currentGameState.pieces,
+            currentGameState.gameboard, currentGameState.movesHistory);
 
-       
-        if(pieceType=="pawn"){
-            var currentX = nextGameState.pieces[piece].x;
-            var currentY = nextGameState.pieces[piece].y;
-            if(toX - currentX == nextGameState.pieces[piece].direction &&
-                toY - currentY != 0){
-                    var ennemyTile = nextGameState.gameboard.findTile(currentX,toY);
-                    if(ennemyTile.isOccupied && 
-                    ennemyTile.occupantType =="pawn" &&
-                    ennemyTile.colour != pieceColour && nextGameState.pieces[nextGameState.gameboard.findOccupant(currentX, toY)].hasJumped &&
-                    nextGameState.pieces[nextGameState.gameboard.findOccupant(currentX, toY)].numberOfMoves == 1){
+    nextGameState.movesHistory.push(fromX.toString() + fromY.toString());
+    nextGameState.movesHistory.push(toX.toString() + toY.toString());
 
-                    var ennemy = ennemyTile.occupant;
-                    nextGameState.pieces[ennemy].alive = false;
-                    ennemyTile.reset(false);
-                    }
+    var startingTile = nextGameState.gameboard.findTile(fromX, fromY);
+    var endingTile = nextGameState.gameboard.findTile(toX, toY);
+    var piece = nextGameState.gameboard.findOccupant(fromX, fromY);
+    if(piece == null)
+        {
+            //createBoard(nextGameState.gameboard);
+            console.log("La piece est nulle");
+            //console.log(nextGameState.gameboard.findTile(fromX, fromY));
+            //console.log(fromX,fromY);
+                
+            return null;
+        }
+    var pieceType = piece.split('-')[1];
+    var pieceColour = startingTile.colour;
+
+    if(pieceType=="pawn"){
+        var currentX = nextGameState.pieces[piece].x;
+        var currentY = nextGameState.pieces[piece].y;
+        if(toX - currentX == nextGameState.pieces[piece].direction &&
+            toY - currentY != 0){
+                var ennemyTile = nextGameState.gameboard.findTile(currentX,toY);
+                if(ennemyTile.isOccupied && 
+                ennemyTile.occupantType =="pawn" &&
+                ennemyTile.colour != pieceColour && nextGameState.pieces[nextGameState.gameboard.findOccupant(currentX, toY)].hasJumped &&
+                nextGameState.pieces[nextGameState.gameboard.findOccupant(currentX, toY)].numberOfMoves == 1){
+
+                var ennemy = ennemyTile.occupant;
+                nextGameState.pieces[ennemy].alive = false;
+                ennemyTile.reset(false);
                 }
-        }            
-
-        nextGameState.pieces[piece].x = toX;
-        nextGameState.pieces[piece].y = toY;
-        startingTile.reset(false);
-
-        if(endingTile.isOccupied){
-            var ennemy = endingTile.occupant;
-            if(nextGameState.pieces[ennemy] == null)
-                console.log(endingTile);
-            nextGameState.pieces[ennemy].alive = false;
-        }
-
-        endingTile.setPiece(piece, false);
-
-        if(pieceType == "pawn"){
-            nextGameState.pieces[piece].numberOfMoves += 1;
-            var target = pieceColour == "white"?3:4;
-            if(nextGameState.pieces[piece].numberOfMoves == 1 && nextGameState.pieces[piece].x == target)
-                nextGameState.pieces[piece].hasJumped =true;
-            var cibleX = pieceColour == "white"?7:0;
-
-            if(toX == cibleX){
-                delete nextGameState.pieces[piece];
-                var index = nextGameState.lastIndex[pieceColour + '-' + "queen"] +1;
-                nextGameState.lastIndex[pieceColour + '-' + "queen"]++;  
-                nextGameState.pieces[pieceColour + '-'+"queen"+'-'+index.toString()] = new Queen(toX, toY, true, pieceColour);
-                endingTile.setPiece(pieceColour +"-"+"queen"+"-"+index.toString(), false);
             }
+    }            
+
+    nextGameState.pieces[piece].x = toX;
+    nextGameState.pieces[piece].y = toY;
+    startingTile.reset(false);
+
+    if(endingTile.isOccupied){
+        var ennemy = endingTile.occupant;
+        nextGameState.pieces[ennemy].alive = false;
+    }
+
+    endingTile.setPiece(piece, false);
+
+    if(pieceType == "pawn"){
+        nextGameState.pieces[piece].numberOfMoves += 1;
+        var target = pieceColour == "white"?3:4;
+        if(nextGameState.pieces[piece].numberOfMoves == 1 && nextGameState.pieces[piece].x == target)
+            nextGameState.pieces[piece].hasJumped =true;
+        var cibleX = pieceColour == "white"?7:0;
+
+        if(toX == cibleX){
+            delete nextGameState.pieces[piece];
+            var index = nextGameState.lastIndex[pieceColour + '-' + "queen"] +1;
+            nextGameState.lastIndex[pieceColour + '-' + "queen"]++;  
+            nextGameState.pieces[pieceColour + '-'+"queen"+'-'+index.toString()] = new Queen(toX, toY, true, pieceColour);
+            endingTile.setPiece(pieceColour +"-"+"queen"+"-"+index.toString(), false);
         }
+    }
 
 
 
-        if(pieceType == "king"){
-            nextGameState.pieces[piece].numberOfMoves = 1;
-            if(nextGameState.pieces[piece].switchWithRook()){
-                var kingColour = piece.split('-')[0];
-                var kingPosX = kingColour == "white"?0:7;
-                nextGameState.pieces[kingColour +"-rook-1"].y = 5;
-                nextGameState.gameboard.findTile(kingPosX,7).reset(false);
-                nextGameState.gameboard.findTile(kingPosX, nextGameState.pieces[kingColour +"-rook-1"].y).setPiece(kingColour +"-rook-1", false);
-            }
-            nextGameState.pieces[piece].hasJump =  true;
+    if(pieceType == "king"){
+        nextGameState.pieces[piece].numberOfMoves = 1;
+        if(nextGameState.pieces[piece].switchWithRook()){
+            var kingColour = piece.split('-')[0];
+            var kingPosX = kingColour == "white"?0:7;
+            nextGameState.pieces[kingColour +"-rook-1"].y = 5;
+            nextGameState.gameboard.findTile(kingPosX,7).reset(false);
+            nextGameState.gameboard.findTile(kingPosX, nextGameState.pieces[kingColour +"-rook-1"].y).setPiece(kingColour +"-rook-1", false);
         }
+        nextGameState.pieces[piece].hasJump =  true;
+    }
 
-        nextGameState.isWhiteTurn = pieceColour == "white"?false:true;
+    nextGameState.isWhiteTurn = pieceColour == "white"?false:true;
 
-        return nextGameState;
+    return nextGameState;
 
     }
+
+
 }

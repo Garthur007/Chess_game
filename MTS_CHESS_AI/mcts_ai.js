@@ -14,13 +14,10 @@ class Montecarlo_TS{
     }
     find_best_move(){
         var bestNode = this.find_greatest_UCB1(this.rootNode);
-        var nb = bestNode.nodeGameState.movesHistory.length;
-
-        var fromX = parseInt(bestNode.nodeGameState.movesHistory[nb - 2][0]);
-        var fromY = parseInt(bestNode.nodeGameState.movesHistory[nb - 2][1]);
-        var toX = parseInt(bestNode.nodeGameState.movesHistory[nb - 1][0]);
-        var toY = parseInt(bestNode.nodeGameState.movesHistory[nb - 1][1]);
-
+        var fromX = bestNode.atq.fromX;
+        var fromY = bestNode.atq.fromY;
+        var toX = bestNode.atq.toX;
+        var toY = bestNode.atq.toY;
         console.log(this.rootNode);
         return new Attack(fromX, fromY, toX, toY);
     }
@@ -36,14 +33,14 @@ class Montecarlo_TS{
         
 
         var n = node.childNodes[0];
-        n.ucbone = n.UCB1();
-        var greatestUCB1 = n.UCB1();
+        n.ucbone = n.get_ucb1_value();
+        var greatestUCB1 = n.get_ucb1_value();
         //console.log(node.childNodes.length);
         for(var i = 1; i < node.childNodes.length; i++){
-            node.childNodes[i].ucbone = node.childNodes[i].UCB1();
+            node.childNodes[i].ucbone = node.childNodes[i].get_ucb1_value();
             //console.log( node.childNodes[i].UCB1());
-            if(node.childNodes[i].UCB1() > greatestUCB1){
-                greatestUCB1 = node.childNodes[i].UCB1();
+            if(node.childNodes[i].get_ucb1_value() > greatestUCB1){
+                greatestUCB1 = node.childNodes[i].get_ucb1_value();
                 n = node.childNodes[i];
             }
         }
@@ -100,12 +97,17 @@ class Montecarlo_TS{
              return;
        
         for(var i =0; i < possibleAttacks.length; i++){
-            var possibleGameState = GameState.Next_GameState(node.nodeGameState, possibleAttacks[i]);
-            if(possibleGameState != null)
-                node.add_child(new Node(possibleGameState, node));
+            var gs = GameState.Next_GameState(node.nodeGameState, possibleAttacks[i]);
+            var whiteAttack = gs.get_random_attack("white");
+            if(whiteAttack != null){
+                //Board.createBoard(gs.gameboard);
+            gs  =  GameState.Next_GameState(gs, whiteAttack);}
+            if(gs != null)
+                node.add_child(new Node(gs, node, possibleAttacks[i]));
         }
      }
 
+    
      score_from_gameState(gs){
         var score = 0;
         for(var key in gs.pieces){
@@ -127,26 +129,13 @@ class Montecarlo_TS{
         }
         return score;
     }
-    we_should_stop_the_game(gs){
-        var onlyKings = false;
-        for(var key in gs.pieces){
-            if(gs.pieces[key].type != 'king' && gs.pieces[key].alive)
-                return false;
-        }
-        return true;
-    }
     
     random_game_simulation(gameState, stop){
-        if(stop > max_loop){
-            this.lastGameState = gameState;
-           
-            var score = this.score_from_gameState(gameState);
-            return 0;
-            return score;
-        }
+        if(stop > max_loop)
+            return gameState.pieces["black-queen-0"].alive?1:0;// sthis.score_from_gameState(gameState);
         else if(gameState.checkIfGameOver()){
             console.log(gameState.movesHistory);
-            createBoard(gameState.gameboard);
+            //Board.createBoard(gameState.gameboard);
             this.lastGameState = gameState;
             console.log(gameState.winner + ' : wins at ' + stop + " moves");
             var score = gameState.winner == black?win:loss;
@@ -165,12 +154,122 @@ class Montecarlo_TS{
             console.log("The colour did not have any more moves");
             return attackingColour == "black"?loss:win;
         }
-        if(gameState.isWhiteInDanger()){
-            console.log(atq);
-        }
+        //if(gameState.isWhiteInDanger()){
+            //console.log(atq);
+       // }
         var nextGameState = GameState.Next_GameState(gameState, atq);
 
         return this.random_game_simulation(nextGameState, stop + 1);
     }
     }
 }
+
+/*var compteur = 0;
+
+class Montecarlo_TS{
+
+    constructor(gs){
+        this.rootNode = new Node(gs, null, null);
+        this.start();
+    }
+    start(){
+        this.execution(this.rootNode);
+    }
+    find_best_move(){
+        var bestNode = this.find_greatest_UCB1(this.rootNode);
+        var fromX = bestNode.atq.fromX;
+        var fromY = bestNode.atq.fromY;
+        var toX = bestNode.atq.toX;
+        var toY = bestNode.atq.toY;
+        return new Attack(fromX, fromY, toX, toY);
+    }
+
+    stop(){
+        //we stop when we have reached the maximal number of iterations
+        if(compteur >= maxR)
+            return true;
+    }
+
+    find_greatest_UCB1(node){  
+        //this method will return the child node with the greatest UCB1
+        if(node.childNodes.length == 0){
+            console.log(node);
+            console.log(this.rootNode);
+            return null;
+        }
+        
+        var n = node.childNodes[0];
+        var greatestUCB1 = n.get_ucb1_value();
+        for(var i = 1; i < node.childNodes.length; i++){
+            if(node.childNodes[i].get_ucb1_value() > greatestUCB1){
+                greatestUCB1 = node.childNodes[i].get_ucb1_value();
+                n = node.childNodes[i];
+            }
+        }
+
+        return n;
+    }
+
+    execution(node){
+        if(compteur > maxR) return;
+        if(node.childNodes.length == 0)
+            this.explorer_node(node);
+        
+        var highestUCB1Node = this.find_greatest_UCB1(node);
+        this.iterate(highestUCB1Node);
+    }
+
+    iterate(node){
+        compteur++;
+        if (this.stop() || node == null) return;
+        if (node.N == 0){
+            node.T += this.random_game_simulation(node.nodeGameState,0);
+            node.N += 1;
+            this.backprogation(node);
+            this.execution(this.rootNode);
+        }
+        else
+            this.execution(node);
+    }
+
+    backprogation(node){
+        if (this.stop() || node.parentNode == null) return;	
+        else
+        {
+            node.parentNode.T += node.T;
+            node.parentNode.N += 1;
+            this.backprogation(node.parentNode);
+        }
+    }
+
+    explorer_node(node){
+        //we are creating child nodes from the node received!
+        //it is in this method that the tree is growing bigger!
+        var possibleAttacks = node.nodeGameState.get_list_of_attacks('black');
+        if(compteur > maxR || node.nodeGameState.checkIfGameOver()
+        || possibleAttacks.length == 0)
+             return;
+       
+        for(var i =0; i < possibleAttacks.length; i++){
+            var possibleGameState = GameState.Next_GameState(node.nodeGameState, possibleAttacks[i]);
+            if(possibleGameState != null)
+                node.add_child(new Node(possibleGameState, node, possibleAttacks[i]));
+        }
+    
+     }
+
+    
+    random_game_simulation(gameState, stop){
+        return 0;
+        if(stop > max_loop)
+            return 0;
+        else if(gameState.checkIfGameOver()){
+            return win;
+        }
+
+        var atk = gameState.get_random_attack("black");
+        var nextGameState = GameState.Next_GameState(gameState, atk);
+        return this.random_game_simulation(nextGameState, atk);
+    }
+}
+*/

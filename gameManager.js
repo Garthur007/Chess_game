@@ -56,7 +56,7 @@ class GameManager{
 
         this.manual = false;
         this.lastMoves = [];
-
+    
         this.toggleTurn = () => {this.isWhitesTurn = !this.isWhitesTurn;};
         this.start();
  }
@@ -85,11 +85,11 @@ class GameManager{
         if(this.get_current_gameState().isValidMove(fromX, fromY, toX, toY)){
             var startingTile = this.gameboard.findTile(fromX, fromY);
             var endingTile = this.gameboard.findTile(toX, toY);
-            var piece = this.gameboard.findOccupant(fromX, fromY);
+            var piece = startingTile.occupant;
 
 
             var pieceType = piece.split('-')[1];
-            var pieceColour = piece.split('-')[0];
+            var pieceColour = startingTile.colour;
 
             if(pieceType=="pawn"){
                 var currentX = this.pieces[piece].x;
@@ -120,9 +120,6 @@ class GameManager{
                 this.pieces[ennemy].alive = false;
             }
             endingTile.setPiece(piece);
-            
-            
-            
 
             if(pieceType == "pawn"){
                 this.pieces[piece].numberOfMoves += 1;
@@ -169,27 +166,27 @@ class GameManager{
             this.toggleTurn();
            
             if(this.get_current_gameState().checkIfGameOver()){
+                var message = this.get_current_gameState().winner == white?
+                "Congradulation, you win!":"You lost to the machine!";
                 this.isGameOver = true;
-                alert("congrats fucker la partie est terminé");
+                alert(message);
             }
            
             if(!this.manual && !this.isWhitesTurn)
-            {
-                setTimeout(()=>{this.ai_move()},500)
-            }
+                setTimeout(()=>{
+                   var mcts = new Montecarlo_TS(this.get_current_gameState());
+                    var atk = mcts.find_best_move();
+                    //console.log(atk);
+                    this.makeMove(atk.fromX, atk.fromY, atk.toX, atk.toY);
+                    //this.ai_move();
+                },500)
     
         }else{
             console.log("invalid move");
-            return false;
         }
 
    }
-   ai_move(){
-        let gs = this.get_current_gameState();    
-        var mcts = new Montecarlo_TS(gs);
-        var atk = mcts.find_best_move();
-        this.makeMove(atk.fromX, atk.fromY, atk.toX, atk.toY);
-   }
+   
 
     setEventHandlerOnClick(){
         buttons.forEach((button)=>{
@@ -200,7 +197,6 @@ class GameManager{
                         var fromTile =  button.getAttribute('id');
                         var x = parseInt(fromTile[1]);
                         var y = parseInt(fromTile[2]);
-                        
                         var colourTurn = this.isWhitesTurn?white:black;
 
                         if(this.gameboard.findTile(x , y).isOccupied && this.gameboard.findTile(x , y).colour == colourTurn){

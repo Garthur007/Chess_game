@@ -2,7 +2,6 @@ class Tile{
     constructor(x, y){
         this.x = x;
         this.y = y;
-       
         this.isOccupied = false;
         this.occupant = "";
         this.occupantType = "";
@@ -21,10 +20,8 @@ class Tile{
             this.setSymbolOnTile();
     }
     setSymbolOnTile(){
-        var symbol = this.colour == "white"?whitePieces[this.occupantType]: blackPieces[this.occupantType];
-        var doc = document.getElementById('t' + this.toString());
-        doc.setAttribute('value', symbol);
-        this.value =symbol;
+       var doc = document.getElementById('t' + this.toString());
+        doc.setAttribute('value', this.value);
     }
     reset(actualGame = true){
         if(actualGame){

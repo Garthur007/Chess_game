@@ -35,9 +35,8 @@ class King extends Piece{
 
     clone(){
         var clone = new King(this.x, this.y, this.alive, this.colour);
-        this.possibleMoves.forEach((move)=>{
-            clone.possibleMoves.push(move);
-        });
+        
+        clone.possibleMoves = [].concat(this.possibleMoves);
         clone.hasJump = this.hasJump;
         return clone;
     }

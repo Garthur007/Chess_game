@@ -71,9 +71,7 @@ class Pawn extends Piece{
 	}
 	clone(){
         var clone = new Pawn(this.x, this.y, this.alive, this.colour, this.index);
-        this.possibleMoves.forEach((move)=>{
-            clone.possibleMoves.push(move);
-		});
+        clone.possibleMoves = [].concat(this.possibleMoves);
 		clone.hasJumped = this.hasJumped;
 		clone.numberOfMoves = this.numberOfMoves;
 		clone.canEatSide = this.canEatSide;

@@ -4,9 +4,7 @@ class Queen extends Piece{
 	}
 	
     update_possible_moves(gameboard){
-
-
-        this.possibleMoves.splice(0, this.possibleMoves.length);
+        this.resetMoves();
         //down
         for (var i = 1; i < 8; ++i)
 		{
@@ -194,9 +192,7 @@ class Queen extends Piece{
 
 	clone(){
         var clone = new Queen(this.x, this.y, this.alive, this.colour);
-        this.possibleMoves.forEach((move)=>{
-            clone.possibleMoves.push(move);
-        });
+        clone.possibleMoves = [].concat(this.possibleMoves);
         return clone;
     }
 	
