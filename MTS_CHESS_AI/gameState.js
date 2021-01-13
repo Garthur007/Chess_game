@@ -14,6 +14,7 @@ class GameState{
     }
 
     copyPieces(pieces){
+        //we make copies of the pieces to create a clone game state
         for(var key in pieces)
             this.pieces[key] = pieces[key].clone();
 
@@ -61,16 +62,12 @@ class GameState{
             gameOver = false;
 
         if(gameOver){
-            //console.log("on set le winner");
             this.winner = this.isBlackInDanger()?'white':'black';
-        }
-        if(!this.pieces["white-king-0"].alive || !this.pieces["black-king-0"].alive){
-            this.winner = this.pieces["white-king-0"].alive?white:black;
-            //console.log("Le king est mort");
-            return false;
+            return true;
         }
 
-        return gameOver;
+
+        return false;
     }
 
     isWhiteInDanger(){
@@ -78,6 +75,8 @@ class GameState{
     }
     
     checkIfColorInDanger(colour){
+        // a colour is in danger if at least one ennemy piece can eat it
+
         this.update_all_possible_moves();
         var c = colour == 'white'?'black':'white';
         var xKing = this.pieces[colour+"-king-0"].x;
@@ -97,6 +96,8 @@ class GameState{
     }
 
     isValidMove(fromX, fromY, toX, toY){
+        //we make sure the move can be done and it doesn't put
+        //the king at risk
 
         if(!this.gameboard.findTile(fromX, fromY).isOccupied)
             return false;
@@ -107,7 +108,7 @@ class GameState{
         
         var atq = new Attack(fromX, fromY, toX, toY);
         var gs = GameState.Next_GameState(this,atq);
-        var condition = this.gameboard.findTile(fromX, fromY).colour == "white"?gs.isWhiteInDanger():gs.isBlackInDanger();
+        var condition = this.gameboard.findTile(fromX, fromY).colour == white?gs.isWhiteInDanger():gs.isBlackInDanger();
         return !condition;
     } 
 
@@ -155,10 +156,11 @@ class GameState{
             }
         }
         var index = randomNumber(possibleAttack.length);
-        if(possibleAttack[index] == null){
-           // console.log("nombre d'attaque : " + possibleAttack.length + " attaque choisie : " + index);
-            return;
-        }
+        if(possibleAttack[index] == null)
+             return;
+        
+        //I added this condition to make the game simulation a little more realistic
+        //because in a real game, you won't move your king unless it is necessary
         if(possibleAttack[index].fromX == this.pieces[colour + "-king-0"].x && 
         possibleAttack[index].fromY == this.pieces[colour + "-king-0"].y){
             return possibleAttack[randomNumber(possibleAttack.length)];
@@ -168,8 +170,8 @@ class GameState{
    }
  
     static Next_GameState(currentGameState, attack){
-    //we assume the attack is legal
-    //on va assumer que le move est légal 
+    //we apply the move/change on a game state and we return 
+    //what the next game state after the move will look like
 
     var fromX = attack.fromX;
     var fromY =  attack.fromY;
@@ -185,15 +187,7 @@ class GameState{
     var startingTile = nextGameState.gameboard.findTile(fromX, fromY);
     var endingTile = nextGameState.gameboard.findTile(toX, toY);
     var piece = nextGameState.gameboard.findOccupant(fromX, fromY);
-    if(piece == null)
-        {
-            //createBoard(nextGameState.gameboard);
-            console.log("La piece est nulle");
-            //console.log(nextGameState.gameboard.findTile(fromX, fromY));
-            //console.log(fromX,fromY);
-                
-            return null;
-        }
+    
     var pieceType = piece.split('-')[1];
     var pieceColour = startingTile.colour;
 
@@ -243,7 +237,6 @@ class GameState{
     }
 
 
-
     if(pieceType == "king"){
         nextGameState.pieces[piece].numberOfMoves = 1;
         if(nextGameState.pieces[piece].switchWithRook()){
@@ -255,12 +248,9 @@ class GameState{
         }
         nextGameState.pieces[piece].hasJump =  true;
     }
-
-    nextGameState.isWhiteTurn = pieceColour == "white"?false:true;
-
+    nextGameState.isWhiteTurn = pieceColour == white?false:true;
+    
     return nextGameState;
 
     }
-
-
 }

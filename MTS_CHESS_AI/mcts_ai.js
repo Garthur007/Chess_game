@@ -1,59 +1,46 @@
 class Montecarlo_TS{
 
-    constructor(gs, nbMove = 0){
-        this.currentGameState = gs;
-        this.lastGameState = null;
-        this.nbMove = nbMove;
-        this.maxL = nbMove >= 1? max_loop:1;
-        this.rootNode = new Node(this.currentGameState);
+    constructor(gs){
+        this.rootNode = new Node(gs);
         this.start();
     }
+
     start(){
         this.execution(this.rootNode);
     }
+
     find_best_move(){
         var bestNode = this.find_greatest_UCB1(this.rootNode);
         var fromX = bestNode.atq.fromX;
         var fromY = bestNode.atq.fromY;
         var toX = bestNode.atq.toX;
         var toY = bestNode.atq.toY;
-        //console.log(this.rootNode);
         return new Attack(fromX, fromY, toX, toY);
     }
 
     stop(){
-        //if(this.nbMove <= 3)
-          //  return this.rootNode.N > 50;
-        return this.rootNode.N > maxR;
+        //return true or false depending on if we have reached the maxR
+        return this.rootNode.N >= maxR;
     }
 
     find_greatest_UCB1(node){  
-        //this method will return the child node with the greatest UCB1
+        //this method will return the child node with the highest UCB1
+        //we loop trough the node's child node to find the one with the highest UCB1
         if(node.childNodes.length == 0)
             return null;
         
-
-        var n = node.childNodes[0];
-        //n.ucbone = n.get_ucb1_value();
-        var greatestUCB1 = n.get_ucb1_value();
-        //console.log(node.childNodes.length);
-        for(var i = 1; i < node.childNodes.length; i++){
-            //node.childNodes[i].ucbone = node.childNodes[i].get_ucb1_value();
-            //console.log( node.childNodes[i].UCB1());
+        var bestNode = node.childNodes[0];
+        var greatestUCB1 = bestNode.get_ucb1_value();
+        for(var i = 1; i < node.childNodes.length; i++)
             if(node.childNodes[i].get_ucb1_value() > greatestUCB1){
                 greatestUCB1 = node.childNodes[i].get_ucb1_value();
-                n = node.childNodes[i];
+                bestNode = node.childNodes[i];
             }
-        }
 
-        return n;
+        return bestNode;
     }
 
     execution(node){
-        
-        if(this.stop())
-            return;
-
         if(node.childNodes.length == 0)
             this.explorer_node(node);
         
@@ -62,6 +49,9 @@ class Montecarlo_TS{
     }
 
     iterate(node){
+        // we iterate
+        // we prioritize the node that have not been visited and we execute from
+        // the ones who have been
         if (this.stop() || node == null) 
             return;
         if (node.N == 0){
@@ -72,14 +62,13 @@ class Montecarlo_TS{
             this.execution(this.rootNode);
         }
         else
-        {
             this.execution(node);
-        }
-
     }
 
     backprogation(node){
-        if (this.stop() || node.parentNode == null)
+        //this is to update the information in all the tree
+        // from the leaf node to the root node
+        if (node.parentNode == null)
 			return;
         else
         {
@@ -88,168 +77,41 @@ class Montecarlo_TS{
             this.backprogation(node.parentNode);
         }
     }
+
     explorer_node(node){
         //Cette méthode sert à créer des nodes enfants pour le nodes reçu en paramètre.
         //C'est dans cette méthode que l'arbre s'agrandit.
-        var possibleAttacks = node.nodeGameState.get_list_of_attacks('black');
-        if(this.stop() || node.nodeGameState.checkIfGameOver()
+        var possibleAttacks = node.nodeGameState.get_list_of_attacks(black);
+        if( node.nodeGameState.checkIfGameOver()
         || possibleAttacks.length == 0)
              return;
        
         for(var i =0; i < possibleAttacks.length; i++){
             var gs = GameState.Next_GameState(node.nodeGameState, possibleAttacks[i]);
-            var whiteAttack = gs.get_random_attack("white");
-            if(whiteAttack != null){
-                //Board.createBoard(gs.gameboard);
-            gs  =  GameState.Next_GameState(gs, whiteAttack);}
+            var whiteAttack = gs.get_random_attack(white);
+
+            if(whiteAttack != null)
+                gs  =  GameState.Next_GameState(gs, whiteAttack);
             if(gs != null)
                 node.add_child(new Node(gs, node, possibleAttacks[i]));
-        }
-     }
-
-    
+            }
+     }    
 
     random_game_simulation(gameState, stop){
+        if(stop > max_loop) //if we reach the maximal number of loop and it is not a final state, 
+            return 0;       //we simply return 0
         
-        if(stop > this.maxL)
-            return 0;//gameState.pieces["black-queen-0"].alive?1:0;// sthis.score_from_gameState(gameState);
-        else if(gameState.checkIfGameOver()){
-            //console.log(gameState.movesHistory);
-            //Board.createBoard(gameState.gameboard);
-            //this.lastGameState = gameState;
-            //console.log(gameState.winner + ' : wins at ' + stop + " moves");
-            //var score = gameState.winner == black?win:loss;
-            //console.log(score);
-            if(gameState.winner == black)
-                return win;
-            else
-                return loss;
-        }else{
-        
-        var attackingColour = stop % 2 == 0?"black":"white";
-        //console.log(attackingColour);
-        var atq = gameState.get_random_attack(attackingColour);
-        if(atq == null){
-            //createBoard(gameState.gameboard);
-            //console.log("The colour did not have any more moves");
-            return attackingColour == "black"?loss:win;
-        }
-        //if(gameState.isWhiteInDanger()){
-            //console.log(atq);
-       // }
-        var nextGameState = GameState.Next_GameState(gameState, atq);
+        if(gameState.checkIfGameOver()) //if the game is over, we return 1000pts if the ai wins else -1000
+           return gameState.winner == black?win:loss;
 
+        var attackingColour = stop % 2 == 0?"black":"white";
+        var atq = gameState.get_random_attack(attackingColour);
+
+        //if the attack is null, it means that the defending colour lost
+        if(atq == null)
+            return attackingColour == "black"?loss:win;
+        
+        var nextGameState = GameState.Next_GameState(gameState, atq);
         return this.random_game_simulation(nextGameState, stop + 1);
     }
-    }
 }
-
-/*var compteur = 0;
-
-class Montecarlo_TS{
-
-    constructor(gs){
-        this.rootNode = new Node(gs, null, null);
-        this.start();
-    }
-    start(){
-        this.execution(this.rootNode);
-    }
-    find_best_move(){
-        var bestNode = this.find_greatest_UCB1(this.rootNode);
-        var fromX = bestNode.atq.fromX;
-        var fromY = bestNode.atq.fromY;
-        var toX = bestNode.atq.toX;
-        var toY = bestNode.atq.toY;
-        return new Attack(fromX, fromY, toX, toY);
-    }
-
-    stop(){
-        //we stop when we have reached the maximal number of iterations
-        if(compteur >= maxR)
-            return true;
-    }
-
-    find_greatest_UCB1(node){  
-        //this method will return the child node with the greatest UCB1
-        if(node.childNodes.length == 0){
-            console.log(node);
-            console.log(this.rootNode);
-            return null;
-        }
-        
-        var n = node.childNodes[0];
-        var greatestUCB1 = n.get_ucb1_value();
-        for(var i = 1; i < node.childNodes.length; i++){
-            if(node.childNodes[i].get_ucb1_value() > greatestUCB1){
-                greatestUCB1 = node.childNodes[i].get_ucb1_value();
-                n = node.childNodes[i];
-            }
-        }
-
-        return n;
-    }
-
-    execution(node){
-        if(compteur > maxR) return;
-        if(node.childNodes.length == 0)
-            this.explorer_node(node);
-        
-        var highestUCB1Node = this.find_greatest_UCB1(node);
-        this.iterate(highestUCB1Node);
-    }
-
-    iterate(node){
-        compteur++;
-        if (this.stop() || node == null) return;
-        if (node.N == 0){
-            node.T += this.random_game_simulation(node.nodeGameState,0);
-            node.N += 1;
-            this.backprogation(node);
-            this.execution(this.rootNode);
-        }
-        else
-            this.execution(node);
-    }
-
-    backprogation(node){
-        if (this.stop() || node.parentNode == null) return;	
-        else
-        {
-            node.parentNode.T += node.T;
-            node.parentNode.N += 1;
-            this.backprogation(node.parentNode);
-        }
-    }
-
-    explorer_node(node){
-        //we are creating child nodes from the node received!
-        //it is in this method that the tree is growing bigger!
-        var possibleAttacks = node.nodeGameState.get_list_of_attacks('black');
-        if(compteur > maxR || node.nodeGameState.checkIfGameOver()
-        || possibleAttacks.length == 0)
-             return;
-       
-        for(var i =0; i < possibleAttacks.length; i++){
-            var possibleGameState = GameState.Next_GameState(node.nodeGameState, possibleAttacks[i]);
-            if(possibleGameState != null)
-                node.add_child(new Node(possibleGameState, node, possibleAttacks[i]));
-        }
-    
-     }
-
-    
-    random_game_simulation(gameState, stop){
-        return 0;
-        if(stop > max_loop)
-            return 0;
-        else if(gameState.checkIfGameOver()){
-            return win;
-        }
-
-        var atk = gameState.get_random_attack("black");
-        var nextGameState = GameState.Next_GameState(gameState, atk);
-        return this.random_game_simulation(nextGameState, atk);
-    }
-}
-*/

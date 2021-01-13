@@ -2,10 +2,12 @@ const buttons =  document.querySelectorAll("input");
 class GameManager{
 
     constructor(){
-        this.gameboard = new Board(this);
+        this.gameboard = new Board();
         this.isGameOver = false;
         this.isWhitesTurn = true;
+
         this.pieceToMove = [];
+
         this.clickCount = 0;
         this.pieces = {
             "white-pawn-0": new Pawn(1,0, true, white, 0, this.gameboard),
@@ -43,6 +45,8 @@ class GameManager{
 
         };
 
+        //lastIndex is used when a pawn reaches the other side 
+        //of the board and wants to transform
         this.lastIndex = {
             'white-rook':1,
             'white-bishop':1,
@@ -53,11 +57,10 @@ class GameManager{
             'black-knight':1,
             'black-queen':0
         };
-        this.nbMove = 0;
-        this.manual = false;
-        this.lastMoves = [];
-    
+
+        //to make sure a player doesn't play twice
         this.toggleTurn = () => {this.isWhitesTurn = !this.isWhitesTurn;};
+        
         this.start();
  }
 
@@ -87,7 +90,6 @@ class GameManager{
             var endingTile = this.gameboard.findTile(toX, toY);
             var piece = startingTile.occupant;
 
-            this.nbMove++;
             var pieceType = piece.split('-')[1];
             var pieceColour = startingTile.colour;
 
@@ -170,11 +172,17 @@ class GameManager{
                 alert("The game is over!");
             }
            
-            if(!this.manual && !this.isWhitesTurn)
+            if(!this.isWhitesTurn)
+            // I decided to force the algorithm to wait 500ms 
+            // to give the computer to at least make the white
+            // move before starting to create the search tree for the ai
                 setTimeout(()=>{
-                   var mcts = new Montecarlo_TS(this.get_current_gameState(), this.nbMove);
+                    //this is where montecarlo is called
+                    //and where it makes his move
+                   var mcts = new Montecarlo_TS(this.get_current_gameState());
                     var atk = mcts.find_best_move();
                     this.makeMove(atk.fromX, atk.fromY, atk.toX, atk.toY);
+                    mcts=null;
                 },500)
     
         }else{
@@ -183,7 +191,8 @@ class GameManager{
 
    }
    
-
+   //to add the wanted behaviour on the board
+   // so that we are able to play
     setEventHandlerOnClick(){
         buttons.forEach((button)=>{
             button.addEventListener('click', ()=>{
