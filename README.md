@@ -28,9 +28,9 @@ Just downlaod this project and open  the index.html file from your web browser.
 
 Disclaimer :
 
-YOU WILL BE ABLE TO BEAT THE AI and that is because in the constants.js file, I set a rather low number of iteration in the mts tree at 1500.
-I also set the the maximum number of moves in the game simultation at 3 moves meaning that the game simulation can only see 3 moves ahead meaning that 
-if in 3 moves it doesn't reach a final state, the simulation will return a score of 0 and that won't really help in the decision process (when calculating the ucb1).
+YOU WILL BE ABLE TO BEAT THE AI and that is because in the constants.js file, I set a rather low number of iterations in the mts tree at 1500.
+I also set the the maximum number of moves in the game simulation at 3 moves, meaning that the game simulation can only see 3 moves ahead.
+If after 3 moves it doesn't reach a final state, the simulation returns a score of 0 and that won't really help in the decision process (when calculating the ucb1).
 
 
 If you want to make the AI "smarter", you can set the maximal number of iteration (maxR) at 5000 or higher depending on your machine.
