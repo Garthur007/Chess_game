@@ -25,6 +25,7 @@ MCTS was introduced in 2006 for computer Go.[1] It has been used in other board 
 How to play the game :
 
 Just downlaod this project and open  the index.html file from your web browser.
+It takes 30 seconds for the AI to make a move.
 
 Disclaimer :
 
